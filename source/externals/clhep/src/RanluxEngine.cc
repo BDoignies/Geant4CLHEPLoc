@@ -311,7 +311,7 @@ void RanluxEngine::showStatus() const
    std::cout << "----------------------------------------" << std::endl;
 }
 
-double RanluxEngine::flat() {
+double RanluxEngine::flat(const std::source_location location) {
 
   float next_random;
   float uni;
@@ -361,7 +361,7 @@ double RanluxEngine::flat() {
   return (double) next_random;
 }
 
-void RanluxEngine::flatArray(const int size, double* vect)
+void RanluxEngine::flatArray(const int size, double* vect, const std::source_location location)
 {
   float next_random;
   float uni;

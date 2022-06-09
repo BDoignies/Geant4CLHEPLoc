@@ -113,7 +113,7 @@ MTwistEngine::MTwistEngine( std::istream& is )
 
 MTwistEngine::~MTwistEngine() {}
 
-double MTwistEngine::flat() {
+double MTwistEngine::flat(const std::source_location location) {
   unsigned int y;
 
    if( count624 >= N ) {
@@ -146,7 +146,7 @@ double MTwistEngine::flat() {
                 	    nearlyTwoToMinus_54();      // make sure non-zero
 }
 
-void MTwistEngine::flatArray( const int size, double *vect ) {
+void MTwistEngine::flatArray( const int size, double *vect, const std::source_location location) {
   for( int i=0; i < size; ++i) vect[i] = flat();
 }
 

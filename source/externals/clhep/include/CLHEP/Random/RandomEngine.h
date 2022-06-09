@@ -37,6 +37,8 @@
 #ifndef HepRandomEngine_h
 #define HepRandomEngine_h 1
 
+#include <source_location>
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -62,11 +64,11 @@ public:
   inline bool operator!=(const HepRandomEngine& engine);
   // Overloaded operators, ==, !=
 
-  virtual double flat() = 0;
+  virtual double flat(const std::source_location location = std::source_location::current()) = 0;
   // Should return a pseudo random number between 0 and 1 
   // (excluding the end points)
 
-  virtual void flatArray(const int size, double* vect) = 0;
+  virtual void flatArray(const int size, double* vect, const std::source_location location = std::source_location::current()) = 0;
   // Fills an array "vect" of specified size with flat random values.
 
   virtual void setSeed(long seed, int) = 0;

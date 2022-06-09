@@ -156,7 +156,7 @@ Ranlux64Engine::Ranlux64Engine( std::istream& is )
 
 Ranlux64Engine::~Ranlux64Engine() {}
 
-double Ranlux64Engine::flat() {
+double Ranlux64Engine::flat(const std::source_location location) {
   // Luscher improves the speed by computing several numbers in a shot,
   // in a manner similar to that of the Tausworth in DualRand or the Hurd
   // engines.  Thus, the real work is done in update().  Here we merely ensure
@@ -373,7 +373,7 @@ void Ranlux64Engine::advance(int dozens) {
 
 } // advance(dozens)
 
-void Ranlux64Engine::flatArray(const int size, double* vect) {
+void Ranlux64Engine::flatArray(const int size, double* vect, const std::source_location location) {
   for( int i=0; i < size; ++i ) {
     vect[i] = flat(); 
   }

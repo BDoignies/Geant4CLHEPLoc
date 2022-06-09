@@ -53,12 +53,12 @@ public:
 	// random should be bumped by this interval (mod 1) compared 
 	// to the last.  x should be between 0 and 1.
 
-  double flat();
+  double flat(const std::source_location location = std::source_location::current());
   // It returns the previously established setNextRandom and bumps that up
   // by the non-zero randomInterval supplied.  Thus repeated calls to flat()
   // generate an evenly spaced sequence (mod 1).
 
-  void flatArray (const int size, double* vect);
+  void flatArray (const int size, double* vect, const std::source_location location = std::source_location::current());
   // Fills the array "vect" of specified size with flat random values.
 
   virtual std::ostream & put (std::ostream & os) const;

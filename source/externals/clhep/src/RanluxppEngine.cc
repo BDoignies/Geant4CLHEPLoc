@@ -109,7 +109,7 @@ uint64_t RanluxppEngine::nextRandomBits() {
   return bits;
 }
 
-double RanluxppEngine::flat() {
+double RanluxppEngine::flat(const std::source_location location) {
   // RandomEngine wants a "double random values ranging between ]0,1[", so
   // exclude all zero bits.
   uint64_t random;
@@ -121,7 +121,7 @@ double RanluxppEngine::flat() {
   return random * div;
 }
 
-void RanluxppEngine::flatArray(const int size, double *vect) {
+void RanluxppEngine::flatArray(const int size, double *vect, const std::source_location location) {
   for (int i = 0; i < size; i++) {
     vect[i] = flat();
   }

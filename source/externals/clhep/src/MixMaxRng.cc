@@ -323,7 +323,7 @@ double MixMaxRng::iterate()
    return double(S.V[1])*INV_M61;
 }
 
-void MixMaxRng::flatArray(const int size, double* vect )
+void MixMaxRng::flatArray(const int size, double* vect, const std::source_location location)
 {
    // fill_array( S, size, arrayDbl );
    for (int i=0; i<size; ++i) { vect[i] = flat(); }
