@@ -236,7 +236,7 @@ void HepJamesRandom::setSeeds(const long* seeds, int)
   theSeeds = seeds;
 }
 
-double HepJamesRandom::flat()
+double HepJamesRandom::flat(const std::source_location location)
 {
    double uni;
 
@@ -261,7 +261,7 @@ double HepJamesRandom::flat()
    return uni;
 }
 
-void HepJamesRandom::flatArray(const int size, double* vect)
+void HepJamesRandom::flatArray(const int size, double* vect, const std::source_location location)
 {
 //   double uni;
    int i;

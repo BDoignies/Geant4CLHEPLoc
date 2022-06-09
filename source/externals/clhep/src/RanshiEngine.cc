@@ -116,7 +116,7 @@ RanshiEngine::RanshiEngine(int rowIndex, int colIndex)
 
 RanshiEngine::~RanshiEngine() { }
 
-double RanshiEngine::flat() {
+double RanshiEngine::flat(const std::source_location location) {
   unsigned int redAngle = (((numBuff/2) - 1) & redSpin) + halfBuff;
   unsigned int blkSpin     = buffer[redAngle] & 0xffffffff;
   unsigned int boostResult = blkSpin ^ redSpin;
@@ -131,7 +131,7 @@ double RanshiEngine::flat() {
 	   nearlyTwoToMinus_54());  		// non-zero
 }
 
-void RanshiEngine::flatArray(const int size, double* vect) {
+void RanshiEngine::flatArray(const int size, double* vect, const std::source_location location) {
   for (int i = 0; i < size; ++i) {
     vect[i] = flat();
   }

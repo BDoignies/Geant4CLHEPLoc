@@ -63,11 +63,11 @@ public:
 //           correlations have very small chance of being observed.
 //  level 4  (p=389): highest possible luxury, all 24 bits chaotic.
 
-  double flat();
+  double flat(const std::source_location location = std::source_location::current());
   // It returns a pseudo random number between 0 and 1,
   // excluding the end points.
 
-  void flatArray (const int size, double* vect);
+  void flatArray (const int size, double* vect, const std::source_location location = std::source_location::current());
   // Fills the array "vect" of specified size with flat random values.
 
   void setSeed(long seed, int lxr=3);

@@ -39,11 +39,11 @@ public:
   virtual ~RanluxppEngine();
   // Constructors and destructor
 
-  double flat() override;
+  double flat(const std::source_location location = std::source_location::current()) override;
   // It returns a pseudo random number between 0 and 1,
   // excluding the end points.
 
-  void flatArray(const int size, double *vect) override;
+  void flatArray(const int size, double *vect, const std::source_location location = std::source_location::current()) override;
   // Fills the array "vect" of specified size with flat random values.
 
   void setSeed(long seed, int dummy = 0) override;

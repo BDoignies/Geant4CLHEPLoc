@@ -196,7 +196,7 @@ void RanecuEngine::showStatus() const
    std::cout << "----------------------------------------" << std::endl;
 }
 
-double RanecuEngine::flat()
+double RanecuEngine::flat(const std::source_location location)
 {
    const int index = seq;
    long seed1 = table[index][0];
@@ -219,7 +219,7 @@ double RanecuEngine::flat()
    return (double)(diff*prec);
 }
 
-void RanecuEngine::flatArray(const int size, double* vect)
+void RanecuEngine::flatArray(const int size, double* vect, const std::source_location location)
 {
    const int index = seq;
    long seed1 = table[index][0];

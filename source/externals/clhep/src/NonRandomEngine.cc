@@ -62,7 +62,7 @@ void NonRandomEngine::setRandomInterval(double x) {
   return;
 }
 
-double NonRandomEngine::flat() {
+double NonRandomEngine::flat(const std::source_location location) {
 
   if (sequenceHasBeenSet) {
     double v = sequence[nInSeq++];
@@ -89,7 +89,7 @@ double NonRandomEngine::flat() {
 }
 
 
-void NonRandomEngine::flatArray(const int size, double* vect) {
+void NonRandomEngine::flatArray(const int size, double* vect, const std::source_location location) {
   for (int i = 0; i < size; ++i) {
     vect[i] = flat();
   }

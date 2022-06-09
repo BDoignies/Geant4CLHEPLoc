@@ -62,12 +62,12 @@ public:
   MixMaxRng& operator=(const MixMaxRng& rng);
   // Copy constructor and assignment operator.
 
-  double flat() { return (S.counter<=(N-1)) ? generate(S.counter):iterate(); }
+  double flat(const std::source_location location = std::source_location::current()) { return (S.counter<=(N-1)) ? generate(S.counter):iterate(); }
   // Returns a pseudo random number between 0 and 1
   // (excluding the zero: in (0,1] )
   // smallest number which it will give is approximately 10^-19
 
-  void flatArray (const int size, double* vect);
+  void flatArray (const int size, double* vect, const std::source_location location = std::source_location::current());
   // Fills the array "vect" of specified size with flat random values.
 
   void setSeed(long seed, int dum=0);

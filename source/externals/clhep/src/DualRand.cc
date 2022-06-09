@@ -113,7 +113,7 @@ DualRand::DualRand(int rowIndex, int colIndex)
 
 DualRand::~DualRand() { }
 
-double DualRand::flat() {
+double DualRand::flat(const std::source_location location) {
   unsigned int ic ( integerCong );
   unsigned int t  ( tausworthe  );
   return ( (t  ^ ic) * twoToMinus_32() +              // most significant part
@@ -122,7 +122,7 @@ double DualRand::flat() {
          );
 }
 
-void DualRand::flatArray(const int size, double* vect) {
+void DualRand::flatArray(const int size, double* vect, const std::source_location location) {
   for (int i = 0; i < size; ++i) {
     vect[i] = flat();
   }
