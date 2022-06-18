@@ -63,7 +63,11 @@ public:
   MixMaxRng& operator=(const MixMaxRng& rng);
   // Copy constructor and assignment operator.
 
-  double flat(const std::source_location location = std::source_location::current()) { return (S.counter<=(N-1)) ? generate(S.counter):iterate(); }
+  double flat(const std::source_location location = std::source_location::current()) 
+  { 
+    ((void) location);
+    return (S.counter<=(N-1)) ? generate(S.counter):iterate(); 
+  }
   // Returns a pseudo random number between 0 and 1
   // (excluding the zero: in (0,1] )
   // smallest number which it will give is approximately 10^-19
