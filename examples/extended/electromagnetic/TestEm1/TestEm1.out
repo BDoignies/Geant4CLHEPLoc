@@ -11,7 +11,7 @@ Environment variable "G4FORCE_RUN_MANAGER_TYPE" enabled with value == Serial. Fo
 
 
 **************************************************************
- Geant4 version Name: geant4-11-00-ref-00    (10-December-2021)
+ Geant4 version Name: geant4-11-01-patch-01    (10-February-2023)
                        Copyright : Geant4 Collaboration
                       References : NIM A 506 (2003), 250-303
                                  : IEEE-TNS 53 (2006), 270-278
@@ -56,8 +56,10 @@ PhysicsList::AddPhysicsList: <emstandard_opt0>
 LPM effect enabled                                 1
 Enable creation and use of sampling tables         0
 Apply cuts on all EM processes                     0
+Use combined TransportationWithMsc                 Disabled
 Use general process                                0
 Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
 Enable sampling of quantum entanglement            0
 X-section factor for integral approach             0.8
 Min kinetic energy for tables                      100 eV 
@@ -73,7 +75,7 @@ Lowest triplet kinetic energy                      1 MeV
 Enable sampling of gamma linear polarisation       0
 5D gamma conversion model type                     0
 5D gamma conversion model on isolated ion          0
-Livermore data directory                           livermore
+Livermore data directory                           epics_2017
 =======================================================================
 ======                 Ionisation Parameters                   ========
 =======================================================================
@@ -83,8 +85,9 @@ Step function for light ions                       (0.2, 0.1 mm)
 Step function for general ions                     (0.2, 0.1 mm)
 Lowest e+e- kinetic energy                         1 keV
 Lowest muon/hadron kinetic energy                  1 keV
-Fluctuations of dE/dx are enabled                  1
 Use ICRU90 data                                    0
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Urban
 Use built-in Birks satuaration                     0
 Build CSDA range enabled                           1
 Use cut as a final range enabled                   0
@@ -116,6 +119,16 @@ Upper energy limit for e+- multiple scattering     100 MeV
 Type of electron single scattering model           0
 Type of nuclear form-factor                        1
 Screening factor                                   1
+=======================================================================
+======                 Atomic Deexcitation Parameters          ========
+=======================================================================
+Fluorescence enabled                               1
+Directory in G4LEDATA for fluorescence data files  fluor
+Auger electron cascade enabled                     1
+PIXE atomic de-excitation enabled                  0
+De-excitation module ignores cuts                  1
+Type of PIXE cross section for hadrons             Empirical
+Type of PIXE cross section for e+-                 Livermore
 =======================================================================
 #
 ##/globalField/setValue 0 0 5 tesla
@@ -132,8 +145,10 @@ Screening factor                                   1
 LPM effect enabled                                 1
 Enable creation and use of sampling tables         0
 Apply cuts on all EM processes                     0
+Use combined TransportationWithMsc                 Disabled
 Use general process                                0
 Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
 Enable sampling of quantum entanglement            0
 X-section factor for integral approach             0.8
 Min kinetic energy for tables                      100 eV 
@@ -149,7 +164,7 @@ Lowest triplet kinetic energy                      1 MeV
 Enable sampling of gamma linear polarisation       0
 5D gamma conversion model type                     0
 5D gamma conversion model on isolated ion          0
-Livermore data directory                           livermore
+Livermore data directory                           epics_2017
 =======================================================================
 ======                 Ionisation Parameters                   ========
 =======================================================================
@@ -159,8 +174,9 @@ Step function for light ions                       (0.2, 0.1 mm)
 Step function for general ions                     (0.2, 0.1 mm)
 Lowest e+e- kinetic energy                         1 keV
 Lowest muon/hadron kinetic energy                  1 keV
-Fluctuations of dE/dx are enabled                  1
 Use ICRU90 data                                    0
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Urban
 Use built-in Birks satuaration                     0
 Build CSDA range enabled                           1
 Use cut as a final range enabled                   0
@@ -193,6 +209,21 @@ Type of electron single scattering model           0
 Type of nuclear form-factor                        1
 Screening factor                                   1
 =======================================================================
+======                 Atomic Deexcitation Parameters          ========
+=======================================================================
+Fluorescence enabled                               1
+Directory in G4LEDATA for fluorescence data files  fluor
+Auger electron cascade enabled                     1
+PIXE atomic de-excitation enabled                  0
+De-excitation module ignores cuts                  1
+Type of PIXE cross section for hadrons             Empirical
+Type of PIXE cross section for e+-                 Livermore
+=======================================================================
+
+### ===  Deexcitation model UAtomDeexcitation is activated for 1 region:
+          DefaultRegionForTheWorld  1  1  0
+### ===  Auger flag: 1
+### ===  Ignore cuts flag:   1
 
 phot:  for gamma SubType=12 BuildTable=0
       LambdaPrime table from 200 keV to 100 TeV in 61 bins 
@@ -211,8 +242,8 @@ conv:  for gamma SubType=14 BuildTable=1
      BetheHeitlerLPM : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
 
 Rayl:  for gamma SubType=11 BuildTable=1
-      Lambda table from 100 eV  to 100 keV, 7 bins/decade, spline: 0
-      LambdaPrime table from 100 keV to 100 TeV in 63 bins 
+      Lambda table from 100 eV  to 150 keV, 7 bins/decade, spline: 0
+      LambdaPrime table from 150 keV to 100 TeV in 62 bins 
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
    LivermoreRayleigh : Emin=    0 eV  Emax=  100 TeV  CullenGenerator
 
@@ -239,7 +270,7 @@ eBrem:  for e-  XStype:4  SubType=3
              eBremSB : Emin=    0 eV  Emax=    1 GeV  ModifiedTsai
             eBremLPM : Emin=    1 GeV Emax=  100 TeV  ModifiedTsai
 
-CoulombScat:  for e- XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for e- XStype:1 SubType=1 BuildTable=1
       Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 0
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -272,7 +303,7 @@ annihil:  for e+ XStype:2 SubType=5 BuildTable=0
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             eplus2gg : Emin=    0 eV  Emax=  100 TeV
 
-CoulombScat:  for e+ XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for e+ XStype:1 SubType=1 BuildTable=1
       Lambda table from 100 MeV to 100 TeV, 7 bins/decade, spline: 0
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -305,7 +336,7 @@ hPairProd:  for proton  XStype:1  SubType=4
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
            hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
-CoulombScat:  for proton XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for proton XStype:1 SubType=1 BuildTable=1
       Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -328,17 +359,19 @@ ionIoni:  for GenericIon  XStype:1  SubType=2
 ======================================================================
 ======          Radioactive Decay Physics Parameters           =======
 ======================================================================
-Max life time                                     1000 ps
+min MeanLife (from G4NuclideTable)                1 ps 
+Max life time (from G4DeexPrecoParameters)        1 ns 
 Internal e- conversion flag                       1
 Stored internal conversion coefficients           0
+Enabled atomic relaxation mode                    1
 Enable correlated gamma emission                  0
 Max 2J for sampling of angular correlations       10
-Atomic de-excitation enabled                      0
-Auger electron emission enabled                   0
-Check EM cuts disabled for atomic de-excitation   0
+Atomic de-excitation enabled                      1
+Auger electron emission enabled                   1
+Check EM cuts disabled for atomic de-excitation   1
 Use Bearden atomic level energies                 0
 Use ANSTO fluorescence model                      0
-Threshold for very long decay time at rest        1e+27  ns
+Threshold for very long decay time at rest        3.171e+10 y  
 ======================================================================
 
 msc:  for alpha  SubType= 10
@@ -382,7 +415,7 @@ hPairProd:  for anti_proton  XStype:1  SubType=4
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
            hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
-CoulombScat:  for anti_proton XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for anti_proton XStype:1 SubType=1 BuildTable=1
       Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -415,7 +448,7 @@ hPairProd:  for kaon+  XStype:1  SubType=4
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
            hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
-CoulombScat:  for kaon+ XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for kaon+ XStype:1 SubType=1 BuildTable=1
       Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -448,7 +481,7 @@ hPairProd:  for kaon-  XStype:1  SubType=4
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
            hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
-CoulombScat:  for kaon- XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for kaon- XStype:1 SubType=1 BuildTable=1
       Used Lambda table of kaon+
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -465,8 +498,7 @@ muIoni:  for mu+  XStype:1  SubType=2
       StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
                Bragg : Emin=    0 eV  Emax=  200 keV
-          BetheBloch : Emin=  200 keV Emax=    1 GeV
-        MuBetheBloch : Emin=    1 GeV Emax=  100 TeV
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV
       CSDA range table up to 1 GeV in 49 bins
 
 muBrems:  for mu+  XStype:1  SubType=3
@@ -478,11 +510,11 @@ muBrems:  for mu+  XStype:1  SubType=3
 muPairProd:  for mu+  XStype:1  SubType=4
       dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
       Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 0
-      Sampling table 21x1001 from 1 GeV to 100 TeV 
+      Sampling table 21x1001 from 0.85 GeV to 100 TeV 
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
           muPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
-CoulombScat:  for mu+ XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for mu+ XStype:1 SubType=1 BuildTable=1
       Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -499,8 +531,7 @@ muIoni:  for mu-  XStype:1  SubType=2
       StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             ICRU73QO : Emin=    0 eV  Emax=  200 keV
-          BetheBloch : Emin=  200 keV Emax=    1 GeV
-        MuBetheBloch : Emin=    1 GeV Emax=  100 TeV
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV
       CSDA range table up to 1 GeV in 49 bins
 
 muBrems:  for mu-  XStype:1  SubType=3
@@ -512,11 +543,11 @@ muBrems:  for mu-  XStype:1  SubType=3
 muPairProd:  for mu-  XStype:1  SubType=4
       dE/dx and range tables from 100 eV  to 100 TeV in 84 bins
       Lambda tables from threshold to 100 TeV, 7 bins/decade, spline: 0
-      Sampling table 21x1001 from 1 GeV to 100 TeV 
+      Sampling table 21x1001 from 0.85 GeV to 100 TeV 
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
           muPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
-CoulombScat:  for mu- XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for mu- XStype:1 SubType=1 BuildTable=1
       Used Lambda table of mu+
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -549,7 +580,7 @@ hPairProd:  for pi+  XStype:1  SubType=4
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
            hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
-CoulombScat:  for pi+ XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for pi+ XStype:1 SubType=1 BuildTable=1
       Lambda table from threshold  to 100 TeV, 7 bins/decade, spline: 0
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -582,7 +613,7 @@ hPairProd:  for pi-  XStype:1  SubType=4
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
            hPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
-CoulombScat:  for pi- XStype:3 SubType=1 BuildTable=1
+CoulombScat:  for pi- XStype:1 SubType=1 BuildTable=1
       Used Lambda table of pi+
       ThetaMin(p) < Theta(degree) < 180 pLimit(GeV^1)= 0.139531
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -593,7 +624,7 @@ CoulombScat:  for pi- XStype:3 SubType=1 BuildTable=1
 Index : 0     used in the geometry : Yes
  Material : Aluminium
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  6.91818 keV    e-  597.592 keV    e+  574.294 keV proton 100 keV
+ Energy thresholds :  gamma  6.91818 keV    e-  597.629 keV    e+  574.329 keV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -619,31 +650,31 @@ N=17 V[N]={906770732717044781, 629165745432651234, 1235682547346241386, 68420008
  Run terminated.
 Run Summary
   Number of events processed : 2000
-  User=1.110000s Real=1.136675s Sys=0.000000s
+  User=1.690000s Real=1.698893s Sys=0.000000s
 
  ======================== run summary ======================
 
  The run is: 2000 e- of 100 MeV through 10 m   of Aluminium (density: 2.7 g/cm3 )
 
- Total energy deposit:   99.816 MeV
+ Total energy deposit:   99.817 MeV
  NIEL energy calculated: 0 eV 
 
- Nb tracks/event   neutral:  25.422   charged:  138.42
- Nb  steps/event   neutral:  140.55   charged:  204.87
+ Nb tracks/event   neutral:  26.266   charged:  213.24
+ Nb  steps/event   neutral:  140.46   charged:  279.25
 
  Process calls frequency :
-                 Rayl=  17814        Transportation=   1822               annihil=   2863
-                compt= 212439                  conv=   2853                 eBrem=  46338
-                eIoni= 360228                   msc=    300                  phot=  46176
-
+          CoulombScat=      1                  Rayl=  17869        Transportation=   1803
+              annihil=   2770                 compt= 210513                  conv=   2755
+                eBrem=  46487                 eIoni= 508883                   msc=    349
+                 phot=  47979 
 
 ---------------------------------------------------------
  Primary particle : 
- true Range = 10.963 cm    rms = 3.857 cm 
- proj Range = 9.5012 cm    rms = 3.573 cm 
- proj/true  = 0.86664
- transverse dispersion at end = 1.6291 cm 
-      mass true Range from simulation = 29.601 g/cm2 
+ true Range = 11.053 cm    rms = 3.8363 cm 
+ proj Range = 9.6034 cm    rms = 3.5551 cm 
+ proj/true  = 0.86882
+ transverse dispersion at end = 1.6103 cm 
+      mass true Range from simulation = 29.844 g/cm2 
        from PhysicsTable (csda range) = 32.101 g/cm2 
 ---------------------------------------------------------
 
@@ -651,7 +682,7 @@ Run Summary
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={569715375853059726, 1512787961385085996, 159385066433723610, 631305360847012361, 868736571017629199, 1849689694718704750, 2262222494328793823, 1296135396667370463, 1848800380547805365, 2127533035138291734, 368664117569056731, 76707054733608429, 977374032953158612, 2124670233721861618, 1025343182502388661, 1561953137578727511, 2153480873874088594} counter= 9sumtot= 661916886947121624
+N=17 V[N]={690198723536179998, 579348065020758353, 1232261265139153084, 165787043733624689, 748937011550919510, 879415774404578847, 2110754935832426187, 1748976034684396008, 1365227957530309923, 1135855280823101212, 359509110872997255, 2259881656703777725, 1810625495170997845, 2089662706748706929, 1984193456088473829, 1436347530539347210, 1011961977761377040} counter= 15sumtot= 856356943217880085
 ---------------------------------------
 #
 /gun/particle proton
@@ -662,7 +693,7 @@ N=17 V[N]={569715375853059726, 1512787961385085996, 159385066433723610, 63130536
 Index : 0     used in the geometry : Yes
  Material : Aluminium
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  6.91818 keV    e-  597.592 keV    e+  574.294 keV proton 100 keV
+ Energy thresholds :  gamma  6.91818 keV    e-  597.629 keV    e+  574.329 keV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -673,7 +704,7 @@ Index : 0     used in the geometry : Yes
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={569715375853059726, 1512787961385085996, 159385066433723610, 631305360847012361, 868736571017629199, 1849689694718704750, 2262222494328793823, 1296135396667370463, 1848800380547805365, 2127533035138291734, 368664117569056731, 76707054733608429, 977374032953158612, 2124670233721861618, 1025343182502388661, 1561953137578727511, 2153480873874088594} counter= 9sumtot= 661916886947121624
+N=17 V[N]={690198723536179998, 579348065020758353, 1232261265139153084, 165787043733624689, 748937011550919510, 879415774404578847, 2110754935832426187, 1748976034684396008, 1365227957530309923, 1135855280823101212, 359509110872997255, 2259881656703777725, 1810625495170997845, 2089662706748706929, 1984193456088473829, 1436347530539347210, 1011961977761377040} counter= 15sumtot= 856356943217880085
 ---------------------------------------
 --> Event 0 starts.
 --> Event 200 starts.
@@ -688,29 +719,29 @@ N=17 V[N]={569715375853059726, 1512787961385085996, 159385066433723610, 63130536
  Run terminated.
 Run Summary
   Number of events processed : 2000
-  User=0.060000s Real=0.057071s Sys=0.000000s
+  User=0.070000s Real=0.069097s Sys=0.000000s
 
  ======================== run summary ======================
 
  The run is: 2000 proton of 100 MeV through 10 m   of Aluminium (density: 2.7 g/cm3 )
 
  Total energy deposit:   100 MeV
- NIEL energy calculated: 226.72 eV 
+ NIEL energy calculated: 168.14 eV 
 
- Nb tracks/event   neutral:       0   charged:   1.007
- Nb  steps/event   neutral:       0   charged:  19.276
+ Nb tracks/event   neutral:       0   charged:  1.0065
+ Nb  steps/event   neutral:       0   charged:  19.073
 
  Process calls frequency :
-          CoulombScat=     40             NoProcess=     14                 hIoni=  38484
-              ionIoni=     14 
+          CoulombScat=     46             NoProcess=     13                 hIoni=  38074
+              ionIoni=     13 
 
 ---------------------------------------------------------
  Primary particle : 
- true Range = 3.711 cm    rms = 410.15 um 
- proj Range = 3.703 cm    rms = 416.37 um 
- proj/true  = 0.99785
- transverse dispersion at end = 1.0796 mm 
-      mass true Range from simulation = 10.02 g/cm2 
+ true Range = 3.7109 cm    rms = 415.06 um 
+ proj Range = 3.7026 cm    rms = 431.69 um 
+ proj/true  = 0.99775
+ transverse dispersion at end = 1.1267 mm 
+      mass true Range from simulation = 10.019 g/cm2 
        from PhysicsTable (csda range) = 10.012 g/cm2 
 ---------------------------------------------------------
 
@@ -718,12 +749,10 @@ Run Summary
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={777423108757527838, 704508982502545851, 951674060730419548, 596006347471717738, 593741351132277324, 1444882825628062695, 1840028270197348749, 136247308043229535, 2212635163244783581, 2030244094028654428, 1051979449125752941, 1973640127354343795, 1148940797978927289, 1830580337482237514, 1179516898147585605, 659264550228523480, 786622168720590139} counter= 7sumtot= 1471191767064976442
+N=17 V[N]={1022057284471871571, 2182122990961787818, 22661610049818286, 1167058904645161636, 1057523812732912072, 448833241231062584, 265784209780802524, 272334288315472262, 2207680454799403809, 1653502782966459341, 1990026467855209068, 1157980319271137565, 496108903690270821, 1002644507988024922, 1781101410953333273, 759600882143407906, 1560436312506735844} counter= 8sumtot= 600714310653319694
 ---------------------------------------
 #
-G4 kernel has come to Quit state.
 ================== Deleting memory pools ===================
 Number of memory pools allocated: 9 of which, static: 0
-Dynamic pools deleted: 9 / Total memory freed: 0.036 MB
+Dynamic pools deleted: 9 / Total memory freed: 0.037 MB
 ============================================================
-RunManagerKernel is deleted. Good bye :)

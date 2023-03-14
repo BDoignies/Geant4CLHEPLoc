@@ -58,6 +58,7 @@ class G4VMultiFragmentation;
 class G4VFermiBreakUp;
 class G4VEvaporation;
 class G4VEvaporationChannel;
+class G4ParticleTable;
 
 class G4ExcitationHandler 
 {
@@ -118,6 +119,7 @@ private:
   G4VMultiFragmentation* theMultiFragmentation;
   G4VFermiBreakUp* theFermiModel;
   G4VEvaporationChannel* thePhotonEvaporation;
+  G4ParticleTable* thePartTable;
   G4IonTable* theTableOfIons;
   G4NistManager* nist;
 
@@ -128,6 +130,7 @@ private:
   const G4ParticleDefinition* theTriton;
   const G4ParticleDefinition* theHe3;
   const G4ParticleDefinition* theAlpha;
+  const G4ParticleDefinition* theLambda;
 
   G4int icID;
 
@@ -140,6 +143,7 @@ private:
   G4double minEForMultiFrag;
   G4double minExcitation;
   G4double maxExcitation;
+  G4double fLambdaMass;
 
   G4bool isInitialised;
   G4bool isEvapLocal;
@@ -187,7 +191,7 @@ inline void G4ExcitationHandler::SortSecondaryFragment(G4Fragment* frag)
   G4int A = frag->GetA_asInt();  
 
   // gamma, e-, p, n
-  if(A <= 1) { 
+  if(A <= 1 || frag->IsLongLived()) { 
     theResults.push_back(frag); 
   } else if(frag->GetExcitationEnergy() < minExcitation) {
     // cold fragments

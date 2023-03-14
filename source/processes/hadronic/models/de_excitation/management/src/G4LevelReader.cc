@@ -58,7 +58,7 @@ G4LevelReader::G4LevelReader(G4NuclearLevelData* ptr)
   fAlphaMax = (G4float)1.e15;
   fParam = fData->GetParameters();
   fTimeFactor = CLHEP::second/G4Pow::GetInstance()->logZ(2);
-  char* directory = std::getenv("G4LEVELGAMMADATA");
+  const char* directory = G4FindDataDir("G4LEVELGAMMADATA");
   if(directory) {
     fDirectory = directory;
   } else {
@@ -194,10 +194,10 @@ const std::vector<G4float>* G4LevelReader::NormalizedICCProbability(G4int Z)
       vec->push_back(x); 
     }
     if (fVerbose > 3) {
-      G4int prec = G4cout.precision(3);
+      G4long prec = G4cout.precision(3);
       G4cout << "# InternalConv: ";
-      G4int nn = vec->size();
-      for(G4int i=0; i<nn; ++i) { G4cout << " " << (*vec)[i]; }
+      std::size_t nn = vec->size();
+      for(std::size_t i=0; i<nn; ++i) { G4cout << " " << (*vec)[i]; }
       G4cout << G4endl;
       G4cout.precision(prec);
     }
@@ -319,7 +319,8 @@ G4LevelReader::LevelManager(G4int Z, G4int A, G4int nlev,
     vEnergy[i] = ener;
     if(fTime > 0.0f)  { fTime *= fTimeFactor; }
     if(fSpin > 48.0f) { fSpin = 0.0f; }
-    vSpin[i]   = (G4int)(100 + fSpin + fSpin) + k*100000;
+    G4int twos = G4lrint(2*fSpin);
+    vSpin[i] = 100 + twos + k*100000;
     if(fVerbose > 2) {
       G4cout << "   Level #" << i1 << " E(MeV)= " << ener/CLHEP::MeV
 	     << "  LTime(s)= " << fTime << " 2S= " << vSpin[i]
@@ -377,7 +378,7 @@ G4LevelReader::LevelManager(G4int Z, G4int A, G4int nlev,
 	vGammaProbability[j] = 1.0f/x;
 	vShellProbability[j] = nullptr;
 	if(fVerbose > 2) { 
-	  G4int prec = G4cout.precision(4);
+	  G4long prec = G4cout.precision(4);
 	  G4cout << "### Transition #" << j << " to level " << i2 
 		 << " i2= " << i2 <<  " Etrans(MeV)= " << tener*CLHEP::keV
 		 << "  fProb= " << fProb << " MultiP= " << tnum
@@ -429,7 +430,7 @@ G4LevelReader::LevelManager(G4int Z, G4int A, G4int nlev,
 	G4cout << "   New G4NucLevel:  Ntrans= " << ntrans  
 	       << " Time(ns)= " << fTime << G4endl; 
       }
-      vLevel[i] = new G4NucLevel((size_t)ntrans, fTime,
+      vLevel[i] = new G4NucLevel((std::size_t)ntrans, fTime,
 				 vTrans,
 				 vGammaCumProbability,
 				 vGammaProbability,
@@ -439,7 +440,7 @@ G4LevelReader::LevelManager(G4int Z, G4int A, G4int nlev,
   }
   G4LevelManager* lman = nullptr;
   if(1 <= i) { 
-    lman = new G4LevelManager(Z, A, (size_t)i,vEnergy,vSpin,vLevel);
+    lman = new G4LevelManager(Z, A, (std::size_t)i,vEnergy,vSpin,vLevel);
     if(fVerbose > 1) {
       G4cout << "=== Reader: new manager for Z= " << Z << " A= " << A 
 	     << " Nlevels= " << i << " E[0]= " 

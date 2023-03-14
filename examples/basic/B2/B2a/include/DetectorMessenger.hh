@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-/// \file DetectorMessenger.hh
+/// \file B2/B2a/include/DetectorMessenger.hh
 /// \brief Definition of the B2a::DetectorMessenger class
 
 #ifndef B2aDetectorMessenger_h
@@ -45,9 +45,9 @@ class DetectorConstruction;
 /// Messenger class that defines commands for DetectorConstruction.
 ///
 /// It implements commands:
-/// - //det/setTargetMaterial name
-/// - //det/setChamberMaterial name
-/// - //det/stepMax value unit
+/// - /B2/det/setTargetMaterial name
+/// - /B2/det/setChamberMaterial name
+/// - /B2/det/stepMax value unit
 
 class DetectorMessenger: public G4UImessenger
 {

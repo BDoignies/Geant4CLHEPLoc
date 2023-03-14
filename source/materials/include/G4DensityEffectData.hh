@@ -23,7 +23,6 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-
 //---------------------------------------------------------------------------
 //
 // GEANT4 Class file
@@ -31,10 +30,6 @@
 // Description: Data on density effect
 //
 // Authors:   A.Bagulya, A.Ivanchenko 28.10.2009
-//
-// Modifications:
-// 
-// 
 //
 //----------------------------------------------------------------------------
 //
@@ -63,10 +58,10 @@ public:
 
   explicit G4DensityEffectData();
 
-  ~G4DensityEffectData();
+  ~G4DensityEffectData() = default;
 
   // return index by Z, -1 if material is not in the table 
-  G4int GetElementIndex(G4int Z, G4State mState) const;
+  G4int GetElementIndex(G4int Z, G4State st = kStateUndefined) const;
 
   // return index by material name, -1 if material is not in the table 
   G4int GetIndex(const G4String& matName) const;
@@ -89,15 +84,15 @@ public:
   inline G4double GetErrorDensity(G4int idx) const; 
   inline G4double GetMeanIonisationPotential(G4int idx) const; 
 
+  // Assignment operator and copy constructor
+  G4DensityEffectData & operator=(const G4DensityEffectData &right) = delete;
+  G4DensityEffectData(const G4DensityEffectData&) = delete;
+
 private:
 
   void Initialize();
 
   void AddMaterial(G4double* val, const G4String& matName);
-
-  // Assignment operator and copy constructor
-  G4DensityEffectData & operator=(const G4DensityEffectData &right) = delete;
-  G4DensityEffectData(const G4DensityEffectData&) = delete;
 
   G4double data[NDENSDATA][NDENSARRAY];
   std::vector<G4String> names;
@@ -107,7 +102,6 @@ private:
   G4State state[NDENSELEM];
 
   G4int index;
-
 };
 
 inline G4double G4DensityEffectData::GetPlasmaEnergy(G4int idx) const

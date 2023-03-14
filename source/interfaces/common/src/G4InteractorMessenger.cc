@@ -37,7 +37,7 @@
 #define STRDUP(str)  ((str) != NULL ? (strcpy((char*)malloc((unsigned)strlen(str) + 1), str)) : (char*)NULL)
 #define STRDEL(str) {if((str)!=NULL) {free(str);str=NULL;}}
 
-static G4bool GetValues (G4String,int,G4String*); 
+static G4bool GetValues (G4String, G4int, G4String*); 
 
 G4InteractorMessenger::G4InteractorMessenger (
  G4VInteractiveSession* a_session
@@ -47,7 +47,9 @@ G4InteractorMessenger::G4InteractorMessenger (
 
   G4UIparameter* parameter;
 
-  interactorDirectory = new G4UIdirectory("/gui/");
+  // gui commands should *not* be broadcast to workers
+  G4bool propagateToWorkers;
+  interactorDirectory = new G4UIdirectory("/gui/",propagateToWorkers=false);
   interactorDirectory->SetGuidance("UI interactors commands.");
 
   // /gui/addMenu :
@@ -178,7 +180,7 @@ void G4InteractorMessenger::SetNewValue (
 ,G4String newValue
 ) 
 {
-  int paramn = command->GetParameterEntries();
+  G4int paramn = (G4int)command->GetParameterEntries();
   G4String* params = new G4String [paramn];
   if(GetValues(newValue,paramn,params)==true) {
     if(command==addMenu) {
@@ -190,7 +192,7 @@ void G4InteractorMessenger::SetNewValue (
     } else if(command==defaultIcons) {
       session->DefaultIcons(command->ConvertToBool(newValue));
     } else if(command==sys) {
-      int rc = system((const char*)params[0]);
+      G4int rc = system((const char*)params[0]);
       if ( rc < 0 ){ } 
     } else if(command==outputStyle) {
       session->OutputStyle((const char*)params[0],(const char*)params[1],(const char*)params[2]);
@@ -204,14 +206,14 @@ void G4InteractorMessenger::SetNewValue (
 }
 G4bool GetValues (
  G4String newValue
-,int paramn
+,G4int paramn
 ,G4String* params
 ) 
 {
   char* value = STRDUP(newValue.data());
   if(value==NULL) return false;
   char* tok = strtok(value," ");
-  for( int i=0; i<paramn;i++ ) {
+  for( G4int i=0; i<paramn; ++i ) {
     if(tok==NULL) {
       STRDEL(value);
       return false;
@@ -240,5 +242,3 @@ G4bool GetValues (
   STRDEL(value);
   return true;
 }
-
-

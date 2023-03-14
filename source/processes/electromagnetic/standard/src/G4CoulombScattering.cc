@@ -71,8 +71,7 @@ G4CoulombScattering::G4CoulombScattering(const G4String& name)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-G4CoulombScattering::~G4CoulombScattering()
-{}
+G4CoulombScattering::~G4CoulombScattering() = default;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
@@ -97,7 +96,11 @@ void G4CoulombScattering::InitialiseProcess(const G4ParticleDefinition* p)
 
   // restricted or non-restricted cross section table
   G4bool yes = false;
-  if(theta == CLHEP::pi) { yes = true; }
+  if(theta == CLHEP::pi) { 
+    yes = true;
+    // for restriced single scattering change cross section shape
+    SetCrossSectionType(fEmIncreasing);
+  }
   SetStartFromNullFlag(yes);
   /*
   G4cout << "### G4CoulombScattering::InitialiseProcess: "

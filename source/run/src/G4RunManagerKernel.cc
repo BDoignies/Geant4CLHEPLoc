@@ -121,8 +121,12 @@ G4RunManagerKernel::G4RunManagerKernel()
 
   G4AllocatorList* allocList = G4AllocatorList::GetAllocatorListIfExist();
   if(allocList != nullptr)
-    numberOfStaticAllocators = allocList->Size();
-  defaultExceptionHandler = new G4ExceptionHandler();
+    numberOfStaticAllocators = (G4int)allocList->Size();
+
+  if(G4StateManager::GetStateManager()->GetExceptionHandler() == nullptr)
+  {  
+     defaultExceptionHandler = new G4ExceptionHandler();
+  }
   if(fRunManagerKernel != nullptr)
   {
     G4Exception("G4RunManagerKernel::G4RunManagerKernel()", "Run0001",
@@ -222,7 +226,11 @@ G4RunManagerKernel::G4RunManagerKernel(RMKType rmkType)
     }
   #endif
 
-  defaultExceptionHandler = new G4ExceptionHandler();
+  if(G4StateManager::GetStateManager()->GetExceptionHandler() == nullptr)
+  {
+     defaultExceptionHandler = new G4ExceptionHandler();
+  }
+
   if(fRunManagerKernel != nullptr)
   {
     G4Exception("G4RunManagerKernel::G4RunManagerKernel()", "Run0001",
@@ -348,7 +356,7 @@ G4RunManagerKernel::~G4RunManagerKernel()
   // set the application state to the quite state
   if(pStateManager->GetCurrentState() != G4State_Quit)
   {
-    if(verboseLevel > 0)
+    if(verboseLevel > 1)
       G4cout << "G4 kernel has come to Quit state." << G4endl;
     pStateManager->SetNewState(G4State_Quit);
   }
@@ -402,12 +410,11 @@ G4RunManagerKernel::~G4RunManagerKernel()
   }
 
   G4UImanager* pUImanager = G4UImanager::GetUIpointer();
-  if((runManagerKernelType == workerRMK) && (verboseLevel > 0))
+  if((runManagerKernelType == workerRMK) && (verboseLevel > 1))
   {
     G4cout << "Thread-local UImanager is to be deleted." << G4endl
            << "There should not be any thread-local G4cout/G4cerr hereafter."
            << G4endl;
-    verboseLevel = 0;
   }
   delete pUImanager;
   if(verboseLevel > 1)
@@ -417,7 +424,7 @@ G4RunManagerKernel::~G4RunManagerKernel()
   if(verboseLevel > 1)
     G4cout << "StateManager deleted." << G4endl;
   delete defaultExceptionHandler;
-  if(verboseLevel > 0)
+  if(verboseLevel > 1)
     G4cout << "RunManagerKernel is deleted. Good bye :)" << G4endl;
   fRunManagerKernel = nullptr;
 }
@@ -949,7 +956,7 @@ void G4RunManagerKernel::CheckRegions()
     G4ProductionCuts* cuts = region->GetProductionCuts();
     if(cuts == nullptr)
     {
-      if(region->IsInMassGeometry())
+      if(region->IsInMassGeometry() && verboseLevel > 0)
       {
         G4cout << "Warning : Region <" << region->GetName()
                << "> does not have specific production cuts," << G4endl
@@ -1163,7 +1170,7 @@ void G4RunManagerKernel::SetupShadowProcess() const
     if(pm != nullptr)
     {
       G4ProcessVector& procs = *(pm->GetProcessList());
-      for(std::size_t idx = 0; idx < procs.size(); ++idx)
+      for(G4int idx = 0; idx < (G4int)procs.size(); ++idx)
       {
         const G4VProcess* masterP = procs[idx]->GetMasterProcess();
         if(masterP == nullptr)

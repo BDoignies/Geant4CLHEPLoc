@@ -147,8 +147,8 @@ G4FFG_FUNCTIONENTER__
   SetNubar();
 
     // Set miscellaneous variables
-    AlphaDefinition_ = reinterpret_cast<G4Ions*>(G4Alpha::Definition());
-    NeutronDefinition_ = reinterpret_cast<G4Ions*>(G4Neutron::Definition());
+    AlphaDefinition_ = static_cast<G4Ions*>(G4Alpha::Definition());
+    NeutronDefinition_ = static_cast<G4Ions*>(G4Neutron::Definition());
     GammaDefinition_ = G4Gamma::Definition();
     SmallestZ_ = SmallestA_ = LargestZ_ = LargestA_ = NULL;
 
@@ -313,7 +313,7 @@ G4FFG_FUNCTIONENTER__
         // distribution is dependant on the alpha particle generation and the
         // Watt fission sampling for neutrons, we only have the left-over energy
         // to work with for the fission daughter products.
-        G4double FragmentsKE;
+        G4double FragmentsKE=0.;
         G4int icounter=0;
         G4int icounter_max=1024;
         do
@@ -972,7 +972,7 @@ G4FFG_DATA_FUNCTIONENTER__
 
     // Check to see if the particle is registered using the PDG code
     // TODO Add metastable state when supported by G4IonTable::GetIon()
-    Temp = reinterpret_cast<G4Ions*>(IonTable_->GetIon(Z, A));
+    Temp = static_cast<G4Ions*>(IonTable_->GetIon(Z, A));
     
     // Removed in favor of the G4IonTable::GetIon() method
 //    // Register the particle if it does not exist
@@ -1041,7 +1041,7 @@ G4FFG_FUNCTIONENTER__
 
     // Generate the file location starting in the Geant4 data directory
     std::ostringstream DirectoryName;
-    DirectoryName << std::getenv("G4NEUTRONHPDATA") << G4FFGDefaultValues::ENDFFissionDataLocation;
+    DirectoryName << G4FindDataDir("G4NEUTRONHPDATA") << G4FFGDefaultValues::ENDFFissionDataLocation;
 
     // Return the directory structure
 G4FFG_FUNCTIONLEAVE__
@@ -1327,8 +1327,8 @@ G4FFG_FUNCTIONENTER__
     // The condition of sampling more energy from the fission products than is
     // alloted is statistically unfavorable, but it could still happen. The
     // do-while loop prevents such an occurrence from happening
-    G4double TotalNeutronEnergy;
-	G4double NeutronEnergy;
+    G4double TotalNeutronEnergy=0.;
+    G4double NeutronEnergy=0.;
 
     // Make sure that we don't sample more energy than is available
     G4int icounter=0;

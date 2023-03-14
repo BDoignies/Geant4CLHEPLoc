@@ -10,7 +10,7 @@
 
 
 **************************************************************
- Geant4 version Name: geant4-11-00-ref-00    (10-December-2021)
+ Geant4 version Name: geant4-11-01-patch-01    (10-February-2023)
                        Copyright : Geant4 Collaboration
                       References : NIM A 506 (2003), 250-303
                                  : IEEE-TNS 53 (2006), 270-278
@@ -146,8 +146,10 @@ fTally 3: G4_WATER,  mass = 8 mg size = 2 2 2 mm  position = 5 0 0 cm
 LPM effect enabled                                 1
 Enable creation and use of sampling tables         0
 Apply cuts on all EM processes                     0
-Use general process                                0
+Use combined TransportationWithMsc                 Disabled
+Use general process                                1
 Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
 Enable sampling of quantum entanglement            0
 X-section factor for integral approach             0.8
 Min kinetic energy for tables                      10 eV 
@@ -163,7 +165,7 @@ Lowest triplet kinetic energy                      1 MeV
 Enable sampling of gamma linear polarisation       0
 5D gamma conversion model type                     0
 5D gamma conversion model on isolated ion          0
-Livermore data directory                           livermore
+Livermore data directory                           epics_2017
 =======================================================================
 ======                 Ionisation Parameters                   ========
 =======================================================================
@@ -173,8 +175,9 @@ Step function for light ions                       (0.1, 0.02 mm)
 Step function for general ions                     (0.1, 0.001 mm)
 Lowest e+e- kinetic energy                         100 eV 
 Lowest muon/hadron kinetic energy                  1 keV
-Fluctuations of dE/dx are enabled                  1
 Use ICRU90 data                                    1
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Urban
 Use built-in Birks satuaration                     0
 Build CSDA range enabled                           0
 Use cut as a final range enabled                   0
@@ -186,12 +189,12 @@ Read data from file for e+e- pair production by mu 0
 =======================================================================
 ======                 Multiple Scattering Parameters          ========
 =======================================================================
-Type of msc step limit algorithm for e+-           3
+Type of msc step limit algorithm for e+-           2
 Type of msc step limit algorithm for muons/hadrons 0
 Msc lateral displacement for e+- enabled           1
 Msc lateral displacement for muons and hadrons     1
 Urban msc model lateral displacement alg96         1
-Range factor for msc step limit for e+-            0.04
+Range factor for msc step limit for e+-            0.03
 Range factor for msc step limit for muons/hadrons  0.2
 Geometry factor for msc step limitation of e+-     2.5
 Safety factor for msc step limit for e+-           0.6
@@ -210,8 +213,7 @@ Screening factor                                   1
 ======                 Atomic Deexcitation Parameters          ========
 =======================================================================
 Fluorescence enabled                               1
-Fluorescence Bearden data files enabled            0
-Fluorescence ANSTO data files enabled              0
+Directory in G4LEDATA for fluorescence data files  fluor
 Auger electron cascade enabled                     0
 PIXE atomic de-excitation enabled                  0
 De-excitation module ignores cuts                  0
@@ -240,20 +242,20 @@ conv:  for gamma SubType=14 BuildTable=1
      BetheHeitlerLPM : Emin=    0 eV  Emax=  100 TeV  ModifiedTsai
 
 Rayl:  for gamma SubType=11 BuildTable=1
-      Lambda table from 10 eV  to 100 keV, 20 bins/decade, spline: 0
-      LambdaPrime table from 100 keV to 100 TeV in 180 bins 
+      Lambda table from 10 eV  to 150 keV, 20 bins/decade, spline: 0
+      LambdaPrime table from 150 keV to 100 TeV in 176 bins 
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
    LivermoreRayleigh : Emin=    0 eV  Emax=  100 TeV  CullenGenerator
 
 msc:  for e-  SubType= 10
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
-          StepLim=DistanceToBoundary Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+          StepLim=SafetyPlus Rfact=0.03 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-eIoni:  for e-  XStype:1  SubType=2
+eIoni:  for e-  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
         MollerBhabha : Emin=    0 eV  Emax=  100 TeV  deltaVI
 
@@ -275,12 +277,12 @@ ePairProd:  for e-  XStype:1  SubType=4
 msc:  for e+  SubType= 10
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
-          StepLim=DistanceToBoundary Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+          StepLim=SafetyPlus Rfact=0.03 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-eIoni:  for e+  XStype:1  SubType=2
+eIoni:  for e+  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.1 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.1 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
         MollerBhabha : Emin=    0 eV  Emax=  100 TeV  deltaVI
 
@@ -308,10 +310,10 @@ msc:  for proton  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-hIoni:  for proton  XStype:1  SubType=2
+hIoni:  for proton  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.05 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
                Bragg : Emin=    0 eV  Emax=    2 MeV  deltaVI
           BetheBloch : Emin=    2 MeV Emax=  100 TeV  deltaVI
@@ -338,12 +340,12 @@ msc:  for GenericIon  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-ionIoni:  for GenericIon  XStype:1  SubType=2
+ionIoni:  for GenericIon  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.1, 0.02 mm), integ: 1, fluct: 1, linLossLim= 0.02
+      StepFunction=(0.1, 0.001 mm), integ: 3, fluct: 1, linLossLim= 0.02
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
-         ParamICRU73 : Emin=    0 eV  Emax=  100 TeV  deltaVI
+    LindhardSorensen : Emin=    0 eV  Emax=  100 TeV  deltaVI
 
 nuclearStopping:  for GenericIon SubType=8 BuildTable=0
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
@@ -354,10 +356,10 @@ msc:  for alpha  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-ionIoni:  for alpha  XStype:1  SubType=2
+ionIoni:  for alpha  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.1, 0.02 mm), integ: 1, fluct: 1, linLossLim= 0.02
+      StepFunction=(0.1, 0.02 mm), integ: 3, fluct: 1, linLossLim= 0.02
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             BraggIon : Emin=    0 eV  Emax=7.9452 MeV  deltaVI
           BetheBloch : Emin=7.9452 MeV Emax=  100 TeV  deltaVI
@@ -371,10 +373,10 @@ msc:  for anti_proton  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-hIoni:  for anti_proton  XStype:1  SubType=2
+hIoni:  for anti_proton  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.05 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             ICRU73QO : Emin=    0 eV  Emax=    2 MeV  deltaVI
           BetheBloch : Emin=    2 MeV Emax=  100 TeV  deltaVI
@@ -397,10 +399,10 @@ msc:  for kaon+  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-hIoni:  for kaon+  XStype:1  SubType=2
+hIoni:  for kaon+  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.05 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
                Bragg : Emin=    0 eV  Emax=1.05231 MeV  deltaVI
           BetheBloch : Emin=1.05231 MeV Emax=  100 TeV  deltaVI
@@ -423,10 +425,10 @@ msc:  for kaon-  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-hIoni:  for kaon-  XStype:1  SubType=2
+hIoni:  for kaon-  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.05 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             ICRU73QO : Emin=    0 eV  Emax=1.05231 MeV  deltaVI
           BetheBloch : Emin=1.05231 MeV Emax=  100 TeV  deltaVI
@@ -449,14 +451,13 @@ msc:  for mu+  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-muIoni:  for mu+  XStype:1  SubType=2
+muIoni:  for mu+  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.05 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
                Bragg : Emin=    0 eV  Emax=  200 keV  deltaVI
-          BetheBloch : Emin=  200 keV Emax=    1 GeV  deltaVI
-        MuBetheBloch : Emin=    1 GeV Emax=  100 TeV
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV
 
 muBrems:  for mu+  XStype:1  SubType=3
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
@@ -467,7 +468,7 @@ muBrems:  for mu+  XStype:1  SubType=3
 muPairProd:  for mu+  XStype:1  SubType=4
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 0
-      Sampling table 21x1001 from 1 GeV to 100 TeV 
+      Sampling table 21x1001 from 0.85 GeV to 100 TeV 
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
           muPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
@@ -476,14 +477,13 @@ msc:  for mu-  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-muIoni:  for mu-  XStype:1  SubType=2
+muIoni:  for mu-  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.05 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             ICRU73QO : Emin=    0 eV  Emax=  200 keV  deltaVI
-          BetheBloch : Emin=  200 keV Emax=    1 GeV  deltaVI
-        MuBetheBloch : Emin=    1 GeV Emax=  100 TeV
+        MuBetheBloch : Emin=  200 keV Emax=  100 TeV
 
 muBrems:  for mu-  XStype:1  SubType=3
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
@@ -494,7 +494,7 @@ muBrems:  for mu-  XStype:1  SubType=3
 muPairProd:  for mu-  XStype:1  SubType=4
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 0
-      Sampling table 21x1001 from 1 GeV to 100 TeV 
+      Sampling table 21x1001 from 0.85 GeV to 100 TeV 
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
           muPairProd : Emin=    0 eV  Emax=  100 TeV  ModifiedMephi
 
@@ -503,10 +503,10 @@ msc:  for pi+  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-hIoni:  for pi+  XStype:1  SubType=2
+hIoni:  for pi+  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.05 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
                Bragg : Emin=    0 eV  Emax=297.505 keV  deltaVI
           BetheBloch : Emin=297.505 keV Emax=  100 TeV  deltaVI
@@ -529,10 +529,10 @@ msc:  for pi-  SubType= 10
             UrbanMsc : Emin=    0 eV  Emax=  100 TeV Nbins=240 100 eV  - 100 TeV
           StepLim=Minimal Rfact=0.2 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
-hIoni:  for pi-  XStype:1  SubType=2
+hIoni:  for pi-  XStype:3  SubType=2
       dE/dx and range tables from 10 eV  to 100 TeV in 260 bins
       Lambda tables from threshold to 100 TeV, 20 bins/decade, spline: 1
-      StepFunction=(0.2, 0.05 mm), integ: 1, fluct: 1, linLossLim= 0.01
+      StepFunction=(0.2, 0.05 mm), integ: 3, fluct: 1, linLossLim= 0.01
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             ICRU73QO : Emin=    0 eV  Emax=297.505 keV  deltaVI
           BetheBloch : Emin=297.505 keV Emax=  100 TeV  deltaVI
@@ -555,14 +555,14 @@ hPairProd:  for pi-  XStype:1  SubType=4
 Index : 0     used in the geometry : Yes
  Material : Galactic
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 100 keV
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 1     used in the geometry : Yes
  Material : G4_WATER
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  2.93549 keV    e-  351.358 keV    e+  341.648 keV proton 100 keV
+ Energy thresholds :  gamma  2.93547 keV    e-  351.353 keV    e+  341.657 keV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -589,21 +589,21 @@ N=17 V[N]={906770732717044781, 629165745432651234, 1235682547346241386, 68420008
  Run terminated.
 Run Summary
   Number of events processed : 10000
-  User=4.680000s Real=4.766021s Sys=0.020000s
+  User=6.350000s Real=6.375698s Sys=0.000000s
 
  The run consists of 10000 proton of 160 MeV through 20 cm  of G4_WATER (density: 1 g/cm3 )
 
- Projected Range= 17.7714 cm    rms= 2.13762 mm 
- Mean number of primary steps = 188.711
- Total energy deposit= 160 MeV
- niel energy deposit = 145.836 eV 
+ Projected Range= 17.7711 cm    rms= 2.70779 mm 
+ Mean number of primary steps = 188.672
+ Total energy deposit= 159.991 MeV
+ niel energy deposit = 200.754 eV 
 
 ---------------------------------------------------------
  Cumulated Doses : 	Edep      	Edep/Ebeam 	Dose
- tally 0: 	 	4.56077 GeV	0.285048 % 	9.13395e-05 Gy
- tally 1: 	 	4.85061 GeV	0.303163 % 	9.71441e-05 Gy
- tally 2: 	 	3.15753 GeV	0.197346 % 	6.32365e-05 Gy
- tally 3: 	 	1.96526 GeV	0.122829 % 	3.93587e-05 Gy
+ tally 0: 	 	4.56943 GeV	0.285589 % 	9.15128e-05 Gy
+ tally 1: 	 	4.89139 GeV	0.305712 % 	9.79609e-05 Gy
+ tally 2: 	 	3.19267 GeV	0.199542 % 	6.39403e-05 Gy
+ tally 3: 	 	1.86029 GeV	0.116268 % 	3.72564e-05 Gy
 
 ---------------------------------------------------------
 
@@ -611,7 +611,7 @@ Run Summary
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={1255844740239793761, 1950797432785805249, 1740728995864393019, 927585514882839693, 1475142508948582117, 1865276659186236466, 33778217320565780, 847534191575952526, 893657554852555289, 222446879138158399, 950070897722979951, 948584834980786713, 575076417430577921, 1497012202541525012, 1403559062431513951, 1912385760364583419, 274288620829065096} counter= 5sumtot= 327026417386362754
+N=17 V[N]={1688224171856633815, 1204397957432844994, 970316653270356218, 2007108838279963520, 1355352758253744969, 238070959558161433, 194812629545793269, 1245385537869589661, 1060554935641088942, 1360172160108689287, 131188915086715362, 488728272194409523, 675129076341361952, 193434760953387947, 1953886095392242541, 2240442317776638725, 1010802352521828454} counter= 16sumtot= 1877107327587592955
 ---------------------------------------
 /gun/particle ion
 /gun/ion 6 12 6
@@ -624,14 +624,14 @@ N=17 V[N]={1255844740239793761, 1950797432785805249, 1740728995864393019, 927585
 Index : 0     used in the geometry : Yes
  Material : Galactic
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 100 keV
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 1     used in the geometry : Yes
  Material : G4_WATER
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  2.93549 keV    e-  351.358 keV    e+  341.648 keV proton 100 keV
+ Energy thresholds :  gamma  2.93547 keV    e-  351.353 keV    e+  341.657 keV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -643,27 +643,27 @@ Index : 1     used in the geometry : Yes
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={1255844740239793761, 1950797432785805249, 1740728995864393019, 927585514882839693, 1475142508948582117, 1865276659186236466, 33778217320565780, 847534191575952526, 893657554852555289, 222446879138158399, 950070897722979951, 948584834980786713, 575076417430577921, 1497012202541525012, 1403559062431513951, 1912385760364583419, 274288620829065096} counter= 5sumtot= 327026417386362754
+N=17 V[N]={1688224171856633815, 1204397957432844994, 970316653270356218, 2007108838279963520, 1355352758253744969, 238070959558161433, 194812629545793269, 1245385537869589661, 1060554935641088942, 1360172160108689287, 131188915086715362, 488728272194409523, 675129076341361952, 193434760953387947, 1953886095392242541, 2240442317776638725, 1010802352521828454} counter= 16sumtot= 1877107327587592955
 ---------------------------------------
 --> Event 0 starts.
  Run terminated.
 Run Summary
   Number of events processed : 1000
-  User=1.470000s Real=1.481221s Sys=0.000000s
+  User=2.100000s Real=2.121501s Sys=0.000000s
 
  The run consists of 1000 C12 of 3.5 GeV through 20 cm  of G4_WATER (density: 1 g/cm3 )
 
- Projected Range= 16.4871 cm    rms= 542.306 um 
- Mean number of primary steps = 122.131
+ Projected Range= 16.5422 cm    rms= 535.539 um 
+ Mean number of primary steps = 156.685
  Total energy deposit= 3.49998 GeV
- niel energy deposit = 235.031 keV
+ niel energy deposit = 291.094 keV
 
 ---------------------------------------------------------
  Cumulated Doses : 	Edep      	Edep/Ebeam 	Dose
- tally 0: 	 	11.2634 GeV	0.321811 % 	0.000225574 Gy
- tally 1: 	 	13.0302 GeV	0.37229 % 	0.000260958 Gy
- tally 2: 	 	15.9968 GeV	0.457051 % 	0.000320371 Gy
- tally 3: 	 	23.6542 GeV	0.675834 % 	0.000473727 Gy
+ tally 0: 	 	11.426 GeV	0.326457 % 	0.000228831 Gy
+ tally 1: 	 	12.7834 GeV	0.365241 % 	0.000256016 Gy
+ tally 2: 	 	15.2416 GeV	0.435474 % 	0.000305247 Gy
+ tally 3: 	 	22.2325 GeV	0.635213 % 	0.000445254 Gy
 
 ---------------------------------------------------------
 
@@ -671,7 +671,7 @@ Run Summary
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={70462351265929819, 351223675932387010, 889644558788293211, 235096626798604145, 1296084755266205846, 54666073852638855, 886000877477084027, 841821525833931666, 706062371565925048, 523522054836857229, 1595650861572468159, 1056522570447400726, 229837803325543474, 1326325179881853265, 2142677425367677594, 1939888390371500683, 756982521172169806} counter= 16sumtot= 1067411568474306857
+N=17 V[N]={1649824727118647661, 1046390055990695993, 1480625329608636178, 1464081956272961574, 690398189349009815, 1387920628077919840, 1805855177575327470, 889528290669479374, 481729531693366248, 1412514200587325633, 1276571729738571688, 2113172881940251241, 1071669001935448011, 1396820044800673496, 195159062383107426, 2263764457198372112, 1930759182272215021} counter= 3sumtot= 1804197364288763222
 ---------------------------------------
 /testem/det/tallyNumber 0
 /testem/det/setMat G4_Cu
@@ -688,21 +688,21 @@ N=17 V[N]={70462351265929819, 351223675932387010, 889644558788293211, 2350966267
 Index : 0     used in the geometry : Yes
  Material : Galactic
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 100 keV
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 1     used in the geometry : Yes
  Material : G4_WATER
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  2.93549 keV    e-  351.358 keV    e+  341.648 keV proton 100 keV
+ Energy thresholds :  gamma  2.93547 keV    e-  351.353 keV    e+  341.657 keV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 2     used in the geometry : Yes
  Material : G4_Cu
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  24.8201 keV    e-  1.40308 MeV    e+  1.3229 MeV proton 100 keV
+ Energy thresholds :  gamma  24.8228 keV    e-  1.40308 MeV    e+  1.3229 MeV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -714,25 +714,25 @@ Index : 2     used in the geometry : Yes
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={70462351265929819, 351223675932387010, 889644558788293211, 235096626798604145, 1296084755266205846, 54666073852638855, 886000877477084027, 841821525833931666, 706062371565925048, 523522054836857229, 1595650861572468159, 1056522570447400726, 229837803325543474, 1326325179881853265, 2142677425367677594, 1939888390371500683, 756982521172169806} counter= 16sumtot= 1067411568474306857
+N=17 V[N]={1649824727118647661, 1046390055990695993, 1480625329608636178, 1464081956272961574, 690398189349009815, 1387920628077919840, 1805855177575327470, 889528290669479374, 481729531693366248, 1412514200587325633, 1276571729738571688, 2113172881940251241, 1071669001935448011, 1396820044800673496, 195159062383107426, 2263764457198372112, 1930759182272215021} counter= 3sumtot= 1804197364288763222
 ---------------------------------------
 --> Event 0 starts.
  Run terminated.
 Run Summary
   Number of events processed : 1000
-  User=0.840000s Real=0.858598s Sys=0.010000s
+  User=1.070000s Real=1.078480s Sys=0.000000s
 
  The run consists of 1000 kaon+ of 100 MeV through 20 cm  of G4_Cu (density: 8.96 g/cm3 )
 
- Projected Range= 2.14998 cm    rms= 1.56444 mm 
- Mean number of primary steps = 20.166
- Total energy deposit= 283.57 MeV
+ Projected Range= 2.15528 cm    rms= 1.15412 mm 
+ Mean number of primary steps = 20.214
+ Total energy deposit= 281.108 MeV
  niel energy deposit = 0 eV 
 
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={495508018669383562, 683011313610550553, 1779006541619756210, 1936949256553312970, 650012140161142995, 42168127184981819, 371819395347582246, 1904684167127274054, 1143064572642814177, 531098315706558922, 767039501000517343, 368782713195569078, 997324943558525402, 1850432347008790962, 573970477557133143, 1645794559938653635, 731067378880224530} counter= 9sumtot= 330832705266913944
+N=17 V[N]={1933654448227140629, 1457435173727069612, 1930983674723996504, 139968334832931166, 321915334657586393, 198050298954934499, 824407054321419117, 177663160651886545, 272833708589235254, 849177198025465057, 1522299965994627137, 1090332125718583053, 389288022713849481, 1679888907265434944, 1024835678810961358, 309735575689495581, 2271528564791882934} counter= 8sumtot= 253096163200641607
 ---------------------------------------
 /testem/det/setMat TechVacuum
 /gun/particle alpha
@@ -748,26 +748,26 @@ N=17 V[N]={495508018669383562, 683011313610550553, 1779006541619756210, 19369492
 Index : 0     used in the geometry : Yes
  Material : Galactic
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 100 keV
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 1     used in the geometry : Yes
  Material : G4_WATER
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  2.93549 keV    e-  351.358 keV    e+  341.648 keV proton 100 keV
+ Energy thresholds :  gamma  2.93547 keV    e-  351.353 keV    e+  341.657 keV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 2     used in the geometry : No 
  Material : G4_Cu
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  24.8201 keV    e-  1.40308 MeV    e+  1.3229 MeV proton 100 keV
+ Energy thresholds :  gamma  24.8228 keV    e-  1.40308 MeV    e+  1.3229 MeV proton 100 keV
 
 Index : 3     used in the geometry : Yes
  Material : TechVacuum
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 100 keV
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -779,13 +779,13 @@ Index : 3     used in the geometry : Yes
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={495508018669383562, 683011313610550553, 1779006541619756210, 1936949256553312970, 650012140161142995, 42168127184981819, 371819395347582246, 1904684167127274054, 1143064572642814177, 531098315706558922, 767039501000517343, 368782713195569078, 997324943558525402, 1850432347008790962, 573970477557133143, 1645794559938653635, 731067378880224530} counter= 9sumtot= 330832705266913944
+N=17 V[N]={1933654448227140629, 1457435173727069612, 1930983674723996504, 139968334832931166, 321915334657586393, 198050298954934499, 824407054321419117, 177663160651886545, 272833708589235254, 849177198025465057, 1522299965994627137, 1090332125718583053, 389288022713849481, 1679888907265434944, 1024835678810961358, 309735575689495581, 2271528564791882934} counter= 8sumtot= 253096163200641607
 ---------------------------------------
 --> Event 0 starts.
  Run terminated.
 Run Summary
   Number of events processed : 100
-  User=0.000000s Real=0.000393s Sys=0.000000s
+  User=0.000000s Real=0.000418s Sys=0.000000s
 
  The run consists of 100 alpha of 265 eV  through 20 cm  of TechVacuum (density: 0.01 mg/cm3)
 
@@ -797,7 +797,7 @@ Run Summary
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={403702353172785809, 1936355637264524162, 1048292004423293155, 1492117175788381541, 1429796826044258185, 1417668632158063387, 2273990211604986535, 1415112980435695757, 446151059717264440, 1967340202324997555, 675612005469303073, 142269223867585130, 1403527606179619698, 995938355855621721, 1209218335557743829, 593958472992688373, 1324925177775211175} counter= 17sumtot= 1729232186922471917
+N=17 V[N]={338928760304083625, 441887219544588962, 851684438601283227, 1817987484827937180, 1159436035507008579, 2250982510064750426, 428191275905355336, 1655753707302913134, 1596304501530477774, 2137638257992607652, 297423786042245159, 1211461843073150226, 910086290912509156, 674649788378540977, 643000731617450453, 892667639589976765, 946714002643445715} counter= 16sumtot= 2113897209342466689
 ---------------------------------------
 /testem/det/setMat G4_WATER
 /gun/particle alpha
@@ -813,26 +813,26 @@ N=17 V[N]={403702353172785809, 1936355637264524162, 1048292004423293155, 1492117
 Index : 0     used in the geometry : Yes
  Material : Galactic
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 100 keV
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 1     used in the geometry : Yes
  Material : G4_WATER
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  2.93549 keV    e-  351.358 keV    e+  341.648 keV proton 100 keV
+ Energy thresholds :  gamma  2.93547 keV    e-  351.353 keV    e+  341.657 keV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 2     used in the geometry : No 
  Material : G4_Cu
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  24.8201 keV    e-  1.40308 MeV    e+  1.3229 MeV proton 100 keV
+ Energy thresholds :  gamma  24.8228 keV    e-  1.40308 MeV    e+  1.3229 MeV proton 100 keV
 
 Index : 3     used in the geometry : No 
  Material : TechVacuum
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 100 keV
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 keV
 
 ==================================================================
 
@@ -842,25 +842,25 @@ Index : 3     used in the geometry : No
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={403702353172785809, 1936355637264524162, 1048292004423293155, 1492117175788381541, 1429796826044258185, 1417668632158063387, 2273990211604986535, 1415112980435695757, 446151059717264440, 1967340202324997555, 675612005469303073, 142269223867585130, 1403527606179619698, 995938355855621721, 1209218335557743829, 593958472992688373, 1324925177775211175} counter= 17sumtot= 1729232186922471917
+N=17 V[N]={338928760304083625, 441887219544588962, 851684438601283227, 1817987484827937180, 1159436035507008579, 2250982510064750426, 428191275905355336, 1655753707302913134, 1596304501530477774, 2137638257992607652, 297423786042245159, 1211461843073150226, 910086290912509156, 674649788378540977, 643000731617450453, 892667639589976765, 946714002643445715} counter= 16sumtot= 2113897209342466689
 ---------------------------------------
 --> Event 0 starts.
  Run terminated.
 Run Summary
   Number of events processed : 100
-  User=0.010000s Real=0.007557s Sys=0.000000s
+  User=0.010000s Real=0.010388s Sys=0.000000s
 
  The run consists of 100 alpha of 100 MeV through 20 cm  of G4_WATER (density: 1 g/cm3 )
 
- Projected Range= 6.45189 mm    rms= 44.9136 um 
- Mean number of primary steps = 30.47
+ Projected Range= 6.46145 mm    rms= 46.5428 um 
+ Mean number of primary steps = 30.44
  Total energy deposit= 100 MeV
- niel energy deposit = 10.7077 keV
+ niel energy deposit = 10.5573 keV
 
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={2004623667291595989, 879195745982039705, 2093901443989122049, 1549743019083598278, 1296684794607161960, 793036328605872205, 713223701860075256, 1229723309484223767, 1844924791105490429, 243775982642946999, 989266786526149153, 1370795956022233674, 504760516675711667, 1060560709304815491, 1918493160505817738, 2107321479041905580, 460285883584924684} counter= 11sumtot= 307730193390439065
+N=17 V[N]={2080744500207456733, 1944926083755594869, 710688226310155038, 2297318243066993899, 1247577656773167168, 620673806240104498, 769351771706101578, 910187047393043345, 224791321024784370, 610207624252623772, 1537402686433635203, 1764701403553745435, 1189035687858514099, 412562457742156602, 271518160371550114, 2244600600676981768, 87273758235602283} counter= 13sumtot= 476816961892659166
 ---------------------------------------
 /testem/det/setMat G4_Si
 /gun/particle ion
@@ -878,31 +878,31 @@ N=17 V[N]={2004623667291595989, 879195745982039705, 2093901443989122049, 1549743
 Index : 0     used in the geometry : Yes
  Material : Galactic
  Range cuts        :  gamma  2 um     e-  2 um     e+  2 um  proton 2 um 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 200 eV 
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 200 eV 
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 1     used in the geometry : Yes
  Material : G4_WATER
  Range cuts        :  gamma  2 um     e-  2 um     e+  2 um  proton 2 um 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 200 eV 
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 200 eV 
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 2     used in the geometry : No 
  Material : G4_Cu
  Range cuts        :  gamma  2 um     e-  2 um     e+  2 um  proton 2 um 
- Energy thresholds :  gamma  1 keV    e-  18.4496 keV    e+  18.0251 keV proton 200 eV 
+ Energy thresholds :  gamma  990 eV     e-  18.458 keV    e+  18.0308 keV proton 200 eV 
 
 Index : 3     used in the geometry : No 
  Material : TechVacuum
  Range cuts        :  gamma  2 um     e-  2 um     e+  2 um  proton 2 um 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 200 eV 
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 200 eV 
 
 Index : 4     used in the geometry : Yes
  Material : G4_Si
  Range cuts        :  gamma  2 um     e-  2 um     e+  2 um  proton 2 um 
- Energy thresholds :  gamma  1 keV    e-  2.76516 keV    e+  2.71847 keV proton 200 eV 
+ Energy thresholds :  gamma  990 eV     e-  2.76718 keV    e+  2.72016 keV proton 200 eV 
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -914,25 +914,25 @@ Index : 4     used in the geometry : Yes
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={2004623667291595989, 879195745982039705, 2093901443989122049, 1549743019083598278, 1296684794607161960, 793036328605872205, 713223701860075256, 1229723309484223767, 1844924791105490429, 243775982642946999, 989266786526149153, 1370795956022233674, 504760516675711667, 1060560709304815491, 1918493160505817738, 2107321479041905580, 460285883584924684} counter= 11sumtot= 307730193390439065
+N=17 V[N]={2080744500207456733, 1944926083755594869, 710688226310155038, 2297318243066993899, 1247577656773167168, 620673806240104498, 769351771706101578, 910187047393043345, 224791321024784370, 610207624252623772, 1537402686433635203, 1764701403553745435, 1189035687858514099, 412562457742156602, 271518160371550114, 2244600600676981768, 87273758235602283} counter= 13sumtot= 476816961892659166
 ---------------------------------------
 --> Event 0 starts.
  Run terminated.
 Run Summary
   Number of events processed : 10
-  User=4.700000s Real=4.838569s Sys=0.050000s
+  User=3.250000s Real=3.300516s Sys=0.040000s
 
  The run consists of 10 Xe131 of 1.217 GeV through 20 cm  of G4_Si (density: 2.33 g/cm3 )
 
- Projected Range= 114.825 um    rms= 27.0151 um 
- Mean number of primary steps = 73555.9
- Total energy deposit= 1.21694 GeV
- niel energy deposit = 1.96992 MeV
+ Projected Range= 102.92 um    rms= 21.5413 um 
+ Mean number of primary steps = 44902.4
+ Total energy deposit= 1.21744 GeV
+ niel energy deposit = 8.64958 MeV
 
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={174620522163249198, 227487990983241537, 326863217177699179, 376313409132070774, 1979876847890039445, 491316667201625753, 1787827889458536748, 646128164618083227, 1442093831957291027, 75219741281704470, 1735495881987339279, 1462692438237170883, 556508558097272293, 631714358284888808, 1632399191618335426, 1503856940612682183, 1956590813442144949} counter= 11sumtot= 866105399647517522
+N=17 V[N]={987077746800997428, 2082610003558889367, 593302383828085190, 109500966082923303, 1895624508566552438, 1336221603731834272, 1149121910930981094, 1082963007991210816, 264354698456808715, 135493131574335760, 868258989621331595, 307082230068886089, 602592755957445596, 1004141008072681110, 564936928765396393, 206407416552654232, 373159235629199863} counter= 16sumtot= 2033633480121743506
 ---------------------------------------
 /testem/det/setMat Water_1.05
 /gun/particle proton
@@ -951,36 +951,36 @@ N=17 V[N]={174620522163249198, 227487990983241537, 326863217177699179, 376313409
 Index : 0     used in the geometry : Yes
  Material : Galactic
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 100 keV
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 1     used in the geometry : Yes
  Material : G4_WATER
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  2.93549 keV    e-  351.358 keV    e+  341.648 keV proton 100 keV
+ Energy thresholds :  gamma  2.93547 keV    e-  351.353 keV    e+  341.657 keV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 2     used in the geometry : No 
  Material : G4_Cu
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  24.8201 keV    e-  1.40308 MeV    e+  1.3229 MeV proton 100 keV
+ Energy thresholds :  gamma  24.8228 keV    e-  1.40308 MeV    e+  1.3229 MeV proton 100 keV
 
 Index : 3     used in the geometry : No 
  Material : TechVacuum
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  1 keV    e-  1 keV    e+  1 keV proton 100 keV
+ Energy thresholds :  gamma  990 eV     e-  990 eV     e+  990 eV  proton 100 keV
 
 Index : 4     used in the geometry : No 
  Material : G4_Si
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  6.93779 keV    e-  546.298 keV    e+  525.604 keV proton 100 keV
+ Energy thresholds :  gamma  6.93672 keV    e-  546.311 keV    e+  525.593 keV proton 100 keV
 
 Index : 5     used in the geometry : Yes
  Material : Water_1.05
  Range cuts        :  gamma  1 mm     e-  1 mm     e+  1 mm  proton 1 mm 
- Energy thresholds :  gamma  2.99703 keV    e-  363.13 keV    e+  352.906 keV proton 100 keV
+ Energy thresholds :  gamma  2.99744 keV    e-  363.116 keV    e+  352.905 keV proton 100 keV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -992,29 +992,27 @@ Index : 5     used in the geometry : Yes
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={174620522163249198, 227487990983241537, 326863217177699179, 376313409132070774, 1979876847890039445, 491316667201625753, 1787827889458536748, 646128164618083227, 1442093831957291027, 75219741281704470, 1735495881987339279, 1462692438237170883, 556508558097272293, 631714358284888808, 1632399191618335426, 1503856940612682183, 1956590813442144949} counter= 11sumtot= 866105399647517522
+N=17 V[N]={987077746800997428, 2082610003558889367, 593302383828085190, 109500966082923303, 1895624508566552438, 1336221603731834272, 1149121910930981094, 1082963007991210816, 264354698456808715, 135493131574335760, 868258989621331595, 307082230068886089, 602592755957445596, 1004141008072681110, 564936928765396393, 206407416552654232, 373159235629199863} counter= 16sumtot= 2033633480121743506
 ---------------------------------------
 --> Event 0 starts.
  Run terminated.
 Run Summary
   Number of events processed : 1000
-  User=0.450000s Real=0.460063s Sys=0.000000s
+  User=0.620000s Real=0.624546s Sys=0.000000s
 
  The run consists of 1000 proton of 160 MeV through 20 cm  of Water_1.05 (density: 1.05 g/cm3 )
 
- Projected Range= 16.9313 cm    rms= 3.50062 mm 
- Mean number of primary steps = 180.35
+ Projected Range= 16.927 cm    rms= 1.8208 mm 
+ Mean number of primary steps = 180.172
  Total energy deposit= 160 MeV
- niel energy deposit = 115.89 eV 
+ niel energy deposit = 181.586 eV 
 
 ------- MixMaxRng engine status -------
  Current state vector is:
 mixmax state, file version 1.0
-N=17 V[N]={649430763664204022, 157348936107073459, 1862949783854467596, 2296103242873474250, 2228648304745320213, 1359521501121079926, 1666908576101999697, 2034149968534936729, 11832340552247788, 2004108593802026421, 1580908145058050983, 718595840290693197, 604356813908231385, 92016843953444458, 630948739477296580, 386249355513431334, 1646281377943325148} counter= 9sumtot= 1483615053791751578
+N=17 V[N]={869322257438941195, 384251251088241991, 2180024558785132357, 853258939912875777, 176205193257164154, 1881574772054670531, 1781061241614129969, 1557037857960190014, 3008773993715497, 1252849085205759056, 1318002576626930808, 2123391528790226507, 2148130426532606502, 816744514228099003, 1633700286528463369, 415258349704432768, 1236702284415004523} counter= 13sumtot= 2183779824427032413
 ---------------------------------------
-G4 kernel has come to Quit state.
 ================== Deleting memory pools ===================
 Number of memory pools allocated: 12 of which, static: 0
-Dynamic pools deleted: 12 / Total memory freed: 45 MB
+Dynamic pools deleted: 12 / Total memory freed: 56 MB
 ============================================================
-RunManagerKernel is deleted. Good bye :)

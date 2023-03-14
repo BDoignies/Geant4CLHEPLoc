@@ -77,11 +77,7 @@ public:
       theAngular[i].Init(aDataFile, theProjectile);
       theAngular[i].SetInterpolation(theInterpolation);
 #ifndef PHP_AS_HP
-      if( i != 0 ) {
-	theAngular[i].PrepareTableInterpolation(&(theAngular[i-1]));
-      } else {
-	theAngular[i].PrepareTableInterpolation((G4ParticleHPContAngularPar*)0);
-      }
+      theAngular[i].PrepareTableInterpolation();
 #endif
     }
   }

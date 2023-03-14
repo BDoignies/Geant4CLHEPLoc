@@ -73,17 +73,15 @@ geant4_add_module(G4emdna-man
     G4OctreeFinder.hh
     G4OctreeFinder.icc
     G4DNABoundingBox.hh
-    G4ChemicalMoleculeFinder.hh
-    G4DNAReactionTypeManager.hh
-    G4VReactionType.hh
     G4UserMeshAction.hh
     G4VScavengerMaterial.hh
+    G4VUserBrownianAction.hh
+    G4VDNAMesh.hh
   SOURCES
     G4AllITFinder.cc
     G4ITBox.cc
     G4IT.cc
     G4ITGun.cc
-    G4ITFinder.cc
     G4ITLeadingTracks.cc
     G4ITModelHandler.cc
     G4ITModelManager.cc
@@ -127,8 +125,7 @@ geant4_add_module(G4emdna-man
     G4VITTimeStepComputer.cc
     G4VITTrackHolder.cc
     G4VScheduler.cc
-    G4DNABoundingBox.cc
-    G4DNAReactionTypeManager.cc)
+    G4DNABoundingBox.cc)
 
 geant4_module_link_libraries(G4emdna-man
   PUBLIC
@@ -144,7 +141,6 @@ geant4_module_link_libraries(G4emdna-man
     G4volumes
   PRIVATE
     G4cuts
-    G4detector
     G4emutils
     G4materials
     G4partman)

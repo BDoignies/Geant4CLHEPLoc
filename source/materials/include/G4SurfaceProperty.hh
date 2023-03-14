@@ -55,7 +55,7 @@
 
 class G4SurfaceProperty;
 
-typedef std::vector<G4SurfaceProperty*> G4SurfacePropertyTable;
+using G4SurfacePropertyTable = std::vector<G4SurfaceProperty*>;
 
 enum G4SurfaceType
 {
@@ -65,7 +65,8 @@ enum G4SurfaceType
   dielectric_LUTDAVIS,    // dielectric-Look-Up-Table DAVIS interface
   dielectric_dichroic,    // dichroic filter interface
   firsov,                 // for Firsov Process
-  x_ray                   // for x-ray mirror process
+  x_ray,                  // for x-ray mirror process
+  coated                 // coated_dielectric-dielectric interface
 };
 
 class G4SurfaceProperty
@@ -75,7 +76,7 @@ class G4SurfaceProperty
   // Constructor of a X-ray optical surface object.
 
   G4SurfaceProperty();
-  virtual ~G4SurfaceProperty();
+  virtual ~G4SurfaceProperty() = default;
 
   const G4String& GetName() const { return theName; }
   // Returns the surface name.

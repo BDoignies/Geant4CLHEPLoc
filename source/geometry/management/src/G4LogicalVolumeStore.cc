@@ -88,26 +88,13 @@ void G4LogicalVolumeStore::Clean()
   //
   locked = true;  
 
-  std::size_t i = 0;
   G4LogicalVolumeStore* store = GetInstance();
-
-#ifdef G4GEOMETRY_VOXELDEBUG
-  G4cout << "Deleting Logical Volumes ... ";
-#endif
 
   for(auto pos=store->cbegin(); pos!=store->cend(); ++pos)
   {
     if (fgNotifier != nullptr) { fgNotifier->NotifyDeRegistration(); }
     if (*pos != nullptr) { (*pos)->Lock(); delete *pos; }
-    ++i;
   }
-
-#ifdef G4GEOMETRY_VOXELDEBUG
-  if (store->size() < i-1)
-    { G4cout << "No volumes deleted. Already deleted by user ?" << G4endl; }
-  else
-    { G4cout << i-1 << " volumes deleted !" << G4endl; }
-#endif
 
   store->bmap.clear(); store->mvalid = false;
   locked = false;
@@ -216,11 +203,12 @@ void G4LogicalVolumeStore::DeRegister(G4LogicalVolume* pVolume)
 }
 
 // ***************************************************************************
-// Retrieve the first volume pointer in the container having that name
+// Retrieve the first or last volume pointer in the container having that name
 // ***************************************************************************
 //
 G4LogicalVolume*
-G4LogicalVolumeStore::GetVolume(const G4String& name, G4bool verbose) const
+G4LogicalVolumeStore::GetVolume(const G4String& name, G4bool verbose,
+                                G4bool reverseSearch) const
 {
   G4LogicalVolumeStore* store = GetInstance();
   if (!store->mvalid)  { store->UpdateMap(); }
@@ -236,7 +224,14 @@ G4LogicalVolumeStore::GetVolume(const G4String& name, G4bool verbose) const
       G4Exception("G4LogicalVolumeStore::GetVolume()",
                   "GeomMgt1001", JustWarning, message);
     }
-    return pos->second[0];
+    if(reverseSearch)
+    {
+      return pos->second[pos->second.size()-1];
+    }
+    else
+    {
+      return pos->second[0];
+    }
   }
   if (verbose)
   {

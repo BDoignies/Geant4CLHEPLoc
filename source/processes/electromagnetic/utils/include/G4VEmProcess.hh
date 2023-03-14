@@ -53,13 +53,13 @@
 #include "G4Material.hh"
 #include "G4MaterialCutsCouple.hh"
 #include "G4Track.hh"
-#include "G4EmModelManager.hh"
 #include "G4UnitsTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleChangeForGamma.hh"
 #include "G4EmParameters.hh"
 #include "G4EmDataHandler.hh"
 #include "G4EmTableType.hh"
+#include "G4EmModelManager.hh"
 #include "G4EmSecondaryParticleType.hh"
 
 class G4Step;
@@ -94,13 +94,6 @@ protected:
   virtual void StreamProcessInfo(std::ostream&) const {};
 
   virtual void InitialiseProcess(const G4ParticleDefinition*) = 0;
-
-  //------------------------------------------------------------------------
-  // Method with standard implementation; may be overwritten if needed
-  //------------------------------------------------------------------------
-
-  virtual G4double MinPrimaryEnergy(const G4ParticleDefinition*,
-                                    const G4Material*);
 
   //------------------------------------------------------------------------
   // Implementation of virtual methods common to all Discrete processes 
@@ -148,25 +141,21 @@ public:
   // Specific methods for Discrete EM post step simulation 
   //------------------------------------------------------------------------
 
-  // It returns the cross section per volume for energy/ material
-  G4double CrossSectionPerVolume(G4double kineticEnergy, 
-                                 const G4MaterialCutsCouple* couple,
-                                 G4double logKinEnergy = DBL_MAX);
+  // The main method to access cross section per volume
+  inline G4double GetLambda(G4double kinEnergy,
+                            const G4MaterialCutsCouple* couple,
+                            G4double logKinEnergy);
+
+  // It returns the cross section per volume for energy/material
+  G4double GetCrossSection(const G4double kinEnergy,
+                           const G4MaterialCutsCouple* couple) override;
 
   // It returns the cross section of the process per atom
   G4double ComputeCrossSectionPerAtom(G4double kineticEnergy, 
                                       G4double Z, G4double A=0., 
                                       G4double cut=0.0);
 
-  G4double MeanFreePath(const G4Track& track);
-
-  // Obsolete method to access cross section per volume
-  G4double GetLambda(G4double kinEnergy, const G4MaterialCutsCouple* couple);
-
-  // The main method to access cross section per volume
-  inline G4double GetLambda(G4double kinEnergy,
-                            const G4MaterialCutsCouple* couple,
-                            G4double logKinEnergy);
+  inline G4double MeanFreePath(const G4Track& track);
 
   //------------------------------------------------------------------------
   // Specific methods to build and access Physics Tables
@@ -187,7 +176,15 @@ public:
   // Cross section table pointers
   inline G4PhysicsTable* LambdaTable() const;
   inline G4PhysicsTable* LambdaTablePrim() const;
+  inline void SetLambdaTable(G4PhysicsTable*);
+  inline void SetLambdaTablePrim(G4PhysicsTable*);
+
+  // Integral method type and peak positions
   inline std::vector<G4double>* EnergyOfCrossSectionMax() const;
+  inline void SetEnergyOfCrossSectionMax(std::vector<G4double>*);
+  inline G4CrossSectionType CrossSectionType() const;
+  inline void SetCrossSectionType(G4CrossSectionType val);
+
   //------------------------------------------------------------------------
   // Define and access particle type 
   //------------------------------------------------------------------------
@@ -195,11 +192,11 @@ public:
   inline const G4ParticleDefinition* Particle() const;
   inline const G4ParticleDefinition* SecondaryParticle() const;
 
+protected:
+
   //------------------------------------------------------------------------
   // Specific methods to set, access, modify models and basic parameters
   //------------------------------------------------------------------------
-
-protected:
 
   // Select model in run time
   inline G4VEmModel* SelectModel(G4double kinEnergy, size_t);
@@ -223,11 +220,11 @@ public:
   // return a model from the local list
   inline G4VEmModel* EmModel(size_t index = 0) const;
 
-  // Access to models
-  inline G4VEmModel* GetModelByIndex(G4int idx = 0, G4bool ver = false) const;
-
   // Access to active model
   inline const G4VEmModel* GetCurrentModel() const;
+
+  // Access to models
+  inline G4VEmModel* GetModelByIndex(G4int idx = 0, G4bool ver = false) const;
 
   // Access to the current G4Element
   const G4Element* GetCurrentElement() const;
@@ -245,14 +242,17 @@ public:
                                 G4double energyLimit);
 
   inline void SetEmMasterProcess(const G4VEmProcess*);
-          
-  inline void SetCrossSectionType(G4CrossSectionType val);
 
   inline void SetBuildTableFlag(G4bool val);
 
   inline void CurrentSetup(const G4MaterialCutsCouple*, G4double energy);
 
   inline G4bool UseBaseMaterial() const;
+
+  void BuildLambdaTable();
+
+  void StreamInfo(std::ostream& outFile, const G4ParticleDefinition&,
+                  G4bool rst=false) const;
 
   // hide copy constructor and assignment operator
   G4VEmProcess(G4VEmProcess &) = delete;
@@ -281,11 +281,6 @@ protected:
   // Single scattering parameters
   inline G4double PolarAngleLimit() const;
 
-  inline G4CrossSectionType CrossSectionType() const;
-
-  inline G4double RecalculateLambda(G4double kinEnergy,
-                                     const G4MaterialCutsCouple* couple);
-
   inline G4ParticleChangeForGamma* GetParticleChange();
 
   inline void SetParticle(const G4ParticleDefinition* p);
@@ -306,9 +301,9 @@ protected:
 
   inline void SetSplineFlag(G4bool val);
 
-  inline const G4Element* GetTargetElement() const;
+  const G4Element* GetTargetElement() const;
 
-  inline const G4Isotope* GetTargetIsotope() const;
+  const G4Isotope* GetTargetIsotope() const;
 
   // these two methods assume that vectors are initilized
   // and idx is within vector length
@@ -316,15 +311,6 @@ protected:
   inline G4double DensityFactor(G4int idx) const;
 
 private:
-
-  void Clear();
-
-  void BuildLambdaTable();
-
-  void StreamInfo(std::ostream& outFile, const G4ParticleDefinition&,
-                  G4bool rst=false) const;
-
-  void FindLambdaMax();
 
   void PrintWarning(G4String tit, G4double val);
 
@@ -388,7 +374,7 @@ private:
   G4double maxKinEnergy;
   G4double minKinEnergyPrim = DBL_MAX;
   G4double lambdaFactor = 0.8;
-  G4double logLambdaFactor;
+  G4double invLambdaFactor;
   G4double biasFactor = 1.0;
   G4double massRatio = 1.0;
   G4double fFactor = 1.0;
@@ -452,11 +438,6 @@ private:
 };
 
 // ======== Run time inline methods ================
-
-inline G4bool G4VEmProcess::ApplyCuts() const 
-{
-  return applyCuts;
-}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
@@ -612,14 +593,21 @@ G4VEmProcess::GetLambda(G4double kinEnergy, const G4MaterialCutsCouple* couple,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-inline G4double 
-G4VEmProcess::RecalculateLambda(G4double e, const G4MaterialCutsCouple* couple)
+G4double G4VEmProcess::MeanFreePath(const G4Track& track)
 {
-  CurrentSetup(couple, e);
-  return fFactor*ComputeCurrentLambda(e);
+  const G4double kinEnergy = track.GetKineticEnergy();
+  CurrentSetup(track.GetMaterialCutsCouple(), kinEnergy);
+  const G4double xs = GetCurrentLambda(kinEnergy,
+                             track.GetDynamicParticle()->GetLogKineticEnergy());
+  return (0.0 < xs) ? 1.0/xs : DBL_MAX; 
 }
 
 // ======== Get/Set inline methods used at initialisation ================
+
+inline G4bool G4VEmProcess::ApplyCuts() const 
+{
+  return applyCuts;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
@@ -665,9 +653,31 @@ inline G4PhysicsTable* G4VEmProcess::LambdaTablePrim() const
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
+inline void G4VEmProcess::SetLambdaTable(G4PhysicsTable* ptr)
+{
+  theLambdaTable = ptr;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+inline void G4VEmProcess::SetLambdaTablePrim(G4PhysicsTable* ptr)
+{
+  theLambdaTablePrim = ptr;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
 inline std::vector<G4double>* G4VEmProcess::EnergyOfCrossSectionMax() const
 {
   return theEnergyOfCrossSectionMax;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+inline void 
+G4VEmProcess::SetEnergyOfCrossSectionMax(std::vector<G4double>* ptr)
+{
+  theEnergyOfCrossSectionMax = ptr;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -739,20 +749,6 @@ inline void G4VEmProcess::SetStartFromNullFlag(G4bool val)
 inline void G4VEmProcess::SetSplineFlag(G4bool val)
 {
   splineFlag = val;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-
-inline const G4Element* G4VEmProcess::GetTargetElement() const
-{
-  return currentModel->GetCurrentElement();
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-
-inline const G4Isotope* G4VEmProcess::GetTargetIsotope() const
-{
-  return currentModel->GetCurrentIsotope();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....

@@ -35,9 +35,6 @@
 G4coutDestination* G4coutDestination::masterG4coutDestination = nullptr;
 
 // --------------------------------------------------------------------
-G4coutDestination::~G4coutDestination() {}
-
-// --------------------------------------------------------------------
 void G4coutDestination::ResetTransformers()
 {
   transformersCout.clear();
@@ -62,7 +59,7 @@ G4int G4coutDestination::ReceiveG4cerr(const G4String& msg)
 G4int G4coutDestination::ReceiveG4cout_(const G4String& msg)
 {
   // Avoid copy of string if not necessary
-  if(transformersCout.size() > 0)
+  if(!transformersCout.empty())
   {
     G4String m    = msg;
     G4bool result = true;
@@ -70,20 +67,20 @@ G4int G4coutDestination::ReceiveG4cout_(const G4String& msg)
     {
       result &= el(m);
       if(!result)
+      {
         break;
+      }
     }
     return (result ? ReceiveG4cout(m) : 0);
   }
-  else
-  {
-    return ReceiveG4cout(msg);
-  }
+  
+  return ReceiveG4cout(msg);
 }
 
 // --------------------------------------------------------------------
 G4int G4coutDestination::ReceiveG4cerr_(const G4String& msg)
 {
-  if(transformersCout.size() > 0)
+  if(!transformersCout.empty())
   {
     G4String m = msg;
     std::for_each(transformersCerr.begin(), transformersCerr.end(),
@@ -92,8 +89,6 @@ G4int G4coutDestination::ReceiveG4cerr_(const G4String& msg)
     );
     return ReceiveG4cerr(m);
   }
-  else
-  {
-    return ReceiveG4cerr(msg);
-  }
+  
+  return ReceiveG4cerr(msg);
 }

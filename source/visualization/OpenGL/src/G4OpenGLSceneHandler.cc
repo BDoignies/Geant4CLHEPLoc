@@ -344,7 +344,7 @@ G4DisplacedSolid* G4OpenGLSceneHandler::CreateCutawaySolid ()
 
 void G4OpenGLSceneHandler::AddPrimitive (const G4Polyline& line)
 {
-  G4int nPoints = line.size ();
+  std::size_t nPoints = line.size ();
   if (nPoints <= 0) return;
 
   // Note: colour and depth test treated in sub-class.
@@ -368,7 +368,7 @@ void G4OpenGLSceneHandler::AddPrimitive (const G4Polyline& line)
   // Boundary and nonboundary edge flags on vertices are significant only if GL_POLYGON_MODE is set to GL_POINT or GL_LINE.  See glPolygonMode.
   
   //  glEdgeFlag (GL_TRUE);
-  for (G4int iPoint = 0; iPoint < nPoints; iPoint++) {
+  for (std::size_t iPoint = 0; iPoint < nPoints; ++iPoint) {
   G4double x, y, z;
     x = line[iPoint].x(); 
     y = line[iPoint].y();
@@ -379,7 +379,7 @@ void G4OpenGLSceneHandler::AddPrimitive (const G4Polyline& line)
 #else
   glBeginVBO(GL_LINE_STRIP);
 
-  for (G4int iPoint = 0; iPoint < nPoints; iPoint++) {
+  for (std::size_t iPoint = 0; iPoint < nPoints; ++iPoint) {
     fOglVertex.push_back(line[iPoint].x());
     fOglVertex.push_back(line[iPoint].y());
     fOglVertex.push_back(line[iPoint].z());
@@ -1023,117 +1023,8 @@ void G4OpenGLSceneHandler::AddCompound(const G4THitsMap<G4StatDouble>& hits) {
   G4VSceneHandler::AddCompound(hits);  // For now.
 }
 
-void G4OpenGLSceneHandler::AddCompound(const G4Mesh& mesh)
-{
-  // Special mesh rendering for OpenGL drivers
-  // Limited to rectangular 3-deep meshes
-  if (mesh.GetMeshType() != G4Mesh::rectangle ||
-      mesh.GetMeshDepth() != 3) {
-    G4VSceneHandler::AddCompound(mesh);
-  }
-
-  auto container = mesh.GetContainerVolume();
-
-  static G4bool firstPrint = true;
-  G4VisManager::Verbosity verbosity = G4VisManager::GetVerbosity();
-  G4bool print = firstPrint && verbosity >= G4VisManager::confirmations;
-
-  if (print) {
-    G4cout
-    << "Special case drawing of G4VNestedParameterisation in G4OpenGLSceneHandler"
-    << '\n' << mesh
-    << G4endl;
-  }
-
-  // Instantiate a temporary G4PhysicalVolumeModel
-  G4ModelingParameters tmpMP;
-  tmpMP.SetCulling(true);  // This avoids drawing transparent...
-  tmpMP.SetCullingInvisible(true);  // ... or invisble volumes.
-  const G4bool useFullExtent = true;  // To avoid calculating the extent
-  G4PhysicalVolumeModel tmpPVModel
-  (container,
-   G4PhysicalVolumeModel::UNLIMITED,
-   G4Transform3D(),
-   &tmpMP,
-   useFullExtent);
-
-  // Instantiate a pseudo scene so that we can make a "private" descent
-  // into the nested parameterisation and fill a multimap...
-  std::multimap<const G4Colour,G4ThreeVector> positionByColour;
-  G4double halfX = 0., halfY = 0., halfZ = 0.;
-  struct PseudoScene: public G4PseudoScene {
-    PseudoScene
-    (G4PhysicalVolumeModel* pvModel // input...the following are outputs
-     , std::multimap<const G4Colour,G4ThreeVector>& positionByColour
-     , G4double& halfX, G4double& halfY, G4double& halfZ)
-    : fpPVModel(pvModel)
-    , fPositionByColour(positionByColour)
-    , fHalfX(halfX), fHalfY(halfY), fHalfZ(halfZ)
-    {}
-    using G4PseudoScene::AddSolid;  // except for...
-    void AddSolid(const G4Box& box) {
-      const G4Colour& colour = fpPVModel->GetCurrentLV()->GetVisAttributes()->GetColour();
-      const G4ThreeVector& position = fpCurrentObjectTransformation->getTranslation();
-      fPositionByColour.insert(std::make_pair(colour,position));
-      fHalfX = box.GetXHalfLength();
-      fHalfY = box.GetYHalfLength();
-      fHalfZ = box.GetZHalfLength();
-    }
-    G4PhysicalVolumeModel* fpPVModel;
-    std::multimap<const G4Colour,G4ThreeVector>& fPositionByColour;
-    G4double &fHalfX, &fHalfY, &fHalfZ;
-  }
-  pseudoScene(&tmpPVModel,positionByColour,halfX,halfY,halfZ);
-
-  // Make private descent into the nested parameterisation
-  tmpPVModel.DescribeYourselfTo(pseudoScene);
-
-  // Make list of found colours
-  std::set<G4Colour> setOfColours;
-  for (const auto& entry: positionByColour) {
-    setOfColours.insert(entry.first);
-  }
-
-  if (print) {
-    for (const auto& colour: setOfColours) {
-      G4cout << "setOfColours: " << colour << G4endl;
-    }
-  }
-
-  // Draw as dots
-  BeginPrimitives (mesh.GetTransform());
-  G4int nDotsTotal = 0;
-  for (const auto& colour: setOfColours) {
-    G4int nDots = 0;
-    G4Polymarker dots;
-    dots.SetVisAttributes(G4Colour(colour));
-    dots.SetMarkerType(G4Polymarker::dots);
-    dots.SetSize(G4VMarker::screen,1.);
-    dots.SetInfo(container->GetName());
-    const auto range = positionByColour.equal_range(colour);
-    for (auto posByCol = range.first; posByCol != range.second; ++posByCol) {
-      const G4double x = posByCol->second.getX() + (2.*G4UniformRand()-1.)*halfX;
-      const G4double y = posByCol->second.getY() + (2.*G4UniformRand()-1.)*halfY;
-      const G4double z = posByCol->second.getZ() + (2.*G4UniformRand()-1.)*halfZ;
-      dots.push_back(G4ThreeVector(x,y,z));
-      ++nDots;
-    }
-    AddPrimitive(dots);
-    if (print) {
-      G4cout
-      << "Number of dots for colour " << colour
-      << ": " << nDots << G4endl;
-    }
-    nDotsTotal += nDots;
-  }
-  if (print) {
-    G4cout << "Total number of dots: " << nDotsTotal << G4endl;
-  }
-  EndPrimitives ();
-
-  firstPrint = false;
-
-  return;
+void G4OpenGLSceneHandler::AddCompound(const G4Mesh& mesh) {
+  StandardSpecialMeshRendering(mesh);
 }
 
 #ifdef G4OPENGL_VERSION_2

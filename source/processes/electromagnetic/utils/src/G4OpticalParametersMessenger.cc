@@ -86,7 +86,7 @@ G4OpticalParametersMessenger::G4OpticalParametersMessenger(
     new G4UIcommand("/process/optical/processActivation", this);
   fActivateProcessCmd->SetGuidance(
     "Activate/deactivate the specified optical process");
-  G4UIparameter* par = new G4UIparameter("proc_name", 's', false);
+  auto par = new G4UIparameter("proc_name", 's', false);
   G4String candidates;
   for(G4int i = 0; i < kNoProcess; ++i)
   {
@@ -123,7 +123,7 @@ G4OpticalParametersMessenger::G4OpticalParametersMessenger(
   fCerenkovMaxBetaChangeCmd =
     new G4UIcmdWithADouble("/process/optical/cerenkov/setMaxBetaChange", this);
   fCerenkovMaxBetaChangeCmd->SetGuidance(
-    "Set maximum change of beta of parent particle per step");
+    "Set maximum change of beta of parent particle per step (in percent)");
   fCerenkovMaxBetaChangeCmd->SetParameterName("CerenkovMaxBetaChange", false);
   fCerenkovMaxBetaChangeCmd->SetRange("CerenkovMaxBetaChange>=0");
   fCerenkovMaxBetaChangeCmd->AvailableForStates(G4State_PreInit, G4State_Idle);

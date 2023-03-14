@@ -76,10 +76,12 @@
 #include "G4OpticksHit.hh"
 #endif
 
+#ifdef WITH_ROOT
 namespace {
     // Mutex to lock updating the global ion map
     G4Mutex ionIdMapMutex = G4MUTEX_INITIALIZER;
 } // namespace
+#endif
 
 EventAction::EventAction()
 : G4UserEventAction() {
@@ -88,7 +90,7 @@ EventAction::EventAction()
 #endif
 }
 
-void EventAction::BeginOfEventAction(const G4Event* anEvent) {
+void EventAction::BeginOfEventAction(const G4Event*) {
 }
 
 void EventAction::EndOfEventAction(const G4Event* event) {

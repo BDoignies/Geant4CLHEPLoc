@@ -11,7 +11,7 @@ Environment variable "G4FORCE_RUN_MANAGER_TYPE" enabled with value == Serial. Fo
 
 
 **************************************************************
- Geant4 version Name: geant4-11-00-ref-00    (10-December-2021)
+ Geant4 version Name: geant4-11-01-patch-01    (10-February-2023)
                        Copyright : Geant4 Collaboration
                       References : NIM A 506 (2003), 250-303
                                  : IEEE-TNS 53 (2006), 270-278
@@ -53,7 +53,7 @@ Environment variable "G4FORCE_RUN_MANAGER_TYPE" enabled with value == Serial. Fo
 
 
  Material: Graphite    density:  2.265 g/cm3   RadL:  18.851 cm   Nucl.Int.Length:  35.388 cm 
-                       Imean:  81.000 eV   temperature: 293.15 K  pressure:   1.00 atm
+                       Imean:  78.000 eV   temperature: 293.15 K  pressure:   1.00 atm
 
    --->  Element: C (C)   Z =  6.0   N =    12   A = 12.011 g/mole
          --->  Isotope:   C12   Z =  6   N =  12   A =  12.00 g/mole   abundance: 98.930 %
@@ -62,7 +62,7 @@ Environment variable "G4FORCE_RUN_MANAGER_TYPE" enabled with value == Serial. Fo
 
 
  Material: Graphite_gas    density:  2.265 mg/cm3  RadL: 188.508 m    Nucl.Int.Length: 353.880 m  
-                       Imean:  81.000 eV   temperature: 293.15 K  pressure:   1.00 atm
+                       Imean:  78.000 eV   temperature: 293.15 K  pressure:   1.00 atm
 
    --->  Element: C (C)   Z =  6.0   N =    12   A = 12.011 g/mole
          --->  Isotope:   C12   Z =  6   N =  12   A =  12.00 g/mole   abundance: 98.930 %
@@ -139,8 +139,10 @@ PhysicsList::SetCuts:CutLength : 10 km
 LPM effect enabled                                 1
 Enable creation and use of sampling tables         0
 Apply cuts on all EM processes                     0
+Use combined TransportationWithMsc                 Disabled
 Use general process                                0
 Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
 Enable sampling of quantum entanglement            0
 X-section factor for integral approach             0.8
 Min kinetic energy for tables                      10 eV 
@@ -156,7 +158,7 @@ Lowest triplet kinetic energy                      1 MeV
 Enable sampling of gamma linear polarisation       0
 5D gamma conversion model type                     0
 5D gamma conversion model on isolated ion          0
-Livermore data directory                           livermore
+Livermore data directory                           epics_2017
 =======================================================================
 ======                 Ionisation Parameters                   ========
 =======================================================================
@@ -166,8 +168,9 @@ Step function for light ions                       (0.2, 0.1 mm)
 Step function for general ions                     (0.2, 0.1 mm)
 Lowest e+e- kinetic energy                         100 eV 
 Lowest muon/hadron kinetic energy                  1 keV
-Fluctuations of dE/dx are enabled                  1
 Use ICRU90 data                                    0
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Universal
 Use built-in Birks satuaration                     0
 Build CSDA range enabled                           1
 Use cut as a final range enabled                   0
@@ -179,12 +182,12 @@ Read data from file for e+e- pair production by mu 0
 =======================================================================
 ======                 Multiple Scattering Parameters          ========
 =======================================================================
-Type of msc step limit algorithm for e+-           3
+Type of msc step limit algorithm for e+-           2
 Type of msc step limit algorithm for muons/hadrons 0
 Msc lateral displacement for e+- enabled           1
 Msc lateral displacement for muons and hadrons     0
 Urban msc model lateral displacement alg96         1
-Range factor for msc step limit for e+-            0.04
+Range factor for msc step limit for e+-            0.03
 Range factor for msc step limit for muons/hadrons  0.2
 Geometry factor for msc step limitation of e+-     2.5
 Safety factor for msc step limit for e+-           0.6
@@ -220,7 +223,7 @@ conv:  for gamma SubType=14 BuildTable=1
 msc:  for e-  SubType= 10
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             UrbanMsc : Emin=    0 eV  Emax=   10 GeV Nbins=160 100 eV  -  10 GeV
-          StepLim=DistanceToBoundary Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+          StepLim=SafetyPlus Rfact=0.03 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
 eIoni:  for e-  XStype:1  SubType=2
       dE/dx and range tables from 10 eV  to 10 GeV in 180 bins
@@ -233,7 +236,7 @@ eIoni:  for e-  XStype:1  SubType=2
 msc:  for e+  SubType= 10
       ===== EM models for the G4Region  DefaultRegionForTheWorld ======
             UrbanMsc : Emin=    0 eV  Emax=   10 GeV Nbins=160 100 eV  -  10 GeV
-          StepLim=DistanceToBoundary Rfact=0.04 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
+          StepLim=SafetyPlus Rfact=0.03 Gfact=2.5 Sfact=0.6 DispFlag:1 Skin=1 Llim=1 mm
 
 eIoni:  for e+  XStype:1  SubType=2
       dE/dx and range tables from 10 eV  to 10 GeV in 180 bins
@@ -266,14 +269,14 @@ hIoni:  for proton  XStype:1  SubType=2
 Index : 0     used in the geometry : Yes
  Material : G4_WATER
  Range cuts        :  gamma  10 km     e-  10 km     e+  10 km  proton 10 km 
- Energy thresholds :  gamma  9.54993 GeV    e-  9.54993 GeV    e+  9.54993 GeV proton 1 TeV
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 1 TeV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
 Index : 1     used in the geometry : Yes
  Material : g4Water_gas
  Range cuts        :  gamma  10 km     e-  10 km     e+  10 km  proton 10 km 
- Energy thresholds :  gamma  9.54993 GeV    e-  9.54993 GeV    e+  9.54993 GeV proton 1 TeV
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 1 TeV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -283,18 +286,18 @@ Index : 1     used in the geometry : Yes
 ### Run 0 start.
 --> Event 0 starts.
 --> Event 1000 starts.
- ---> NbofEvents= 1000   NbOfelectr= 69755   Tkin= 586.556 keV (0.000 %)   NbOfelec in cav= 4633   Dose/EnFluence= 24.541 cm2/g (0.000 %) 
+ ---> NbofEvents= 1000   NbOfelectr= 70412   Tkin= 588.048 keV (0.000 %)   NbOfelec in cav= 4661   Dose/EnFluence= 28.936 cm2/g (0.000 %) 
 
 --> Event 2000 starts.
- ---> NbofEvents= 2000   NbOfelectr= 140305   Tkin= 586.951 keV (0.067 %)   NbOfelec in cav= 9211   Dose/EnFluence= 25.899 cm2/g (5.533 %) 
+ ---> NbofEvents= 2000   NbOfelectr= 141062   Tkin= 588.463 keV (0.071 %)   NbOfelec in cav= 9597   Dose/EnFluence= 31.202 cm2/g (7.829 %) 
 
 --> Event 3000 starts.
- ---> NbofEvents= 3000   NbOfelectr= 210411   Tkin= 587.690 keV (0.126 %)   NbOfelec in cav= 13840   Dose/EnFluence= 26.887 cm2/g (3.816 %) 
+ ---> NbofEvents= 3000   NbOfelectr= 212079   Tkin= 588.710 keV (0.042 %)   NbOfelec in cav= 14443   Dose/EnFluence= 30.413 cm2/g (-2.527 %) 
 
  Run terminated.
 Run Summary
   Number of events processed : 4000
-  User=6.580000s Real=6.689815s Sys=0.010000s
+  User=7.240000s Real=7.280511s Sys=0.010000s
 
  ======================== run summary ======================
 
@@ -304,31 +307,29 @@ Run Summary
 
  ============================================================
 
- Process calls frequency --->  compt= 280800  Transportation= 76336  msc= 636736  eIoni= 2186971
+ Process calls frequency --->  compt= 283107  Transportation= 77147  msc= 448973  eIoni= 2234482
 
  Gamma crossSections in wall material :  compt= 63.464 cm2/g   --> total= 63.464 cm2/g
 
- Mean energy of secondary e- = 587.9922 keV +- 0.1033 %  (--> range in wall material = 2.2199 mm )
- Mass_energy_transfer coef: 29.8529 cm2/g
+ Mean energy of secondary e- = 588.4069 keV +- 0.1026 %  (--> range in wall material = 2.2220 mm )
+ Mass_energy_transfer coef: 29.8740 cm2/g
 
- StoppingPower in wall   = 1.9645 MeV*cm2/g
-               in cavity = 1.9645 MeV*cm2/g
+ StoppingPower in wall   = 1.9643 MeV*cm2/g
+               in cavity = 1.9643 MeV*cm2/g
 
  Charged particle flow in cavity :
-      Enter --> nbParticles = 18529	 Energy = 9.4373 GeV
-      Exit  --> nbParticles = 18533	 Energy = 9.4365 GeV
+      Enter --> nbParticles = 19138	 Energy = 9.6281 GeV
+      Exit  --> nbParticles = 19151	 Energy = 9.6320 GeV
 
- Total edep in cavity = 12.1060 MeV +- 2.2586 %	 Total charged trackLength = 51.0861 m     (mean value = 2.7571 mm )
- Total dose in cavity = 19.2673 MeV/mg
- Dose/EnergyFluence   = 27.2385 cm2/g
+ Total edep in cavity = 13.1072 MeV +- 2.8093 %	 Total charged trackLength = 52.9837 m     (mean value = 2.7685 mm )
+ Total dose in cavity = 20.8607 MeV/mg
+ Dose/EnergyFluence   = 29.4912 cm2/g
 
- (Dose/EnergyFluence)/Mass_energy_transfer = 0.91242 +- 0.02063
+ (Dose/EnergyFluence)/Mass_energy_transfer = 0.98719 +- 0.02775
 
- StepSize of ch. tracks in wall   = 167.6347 um  +- 186.0520 um 	 (nbSteps/track = 10.0342)
- StepSize of ch. tracks in cavity = 682.4589 um  +- 739.9919 um 	 (nbSteps/track = 4.0399)
-G4 kernel has come to Quit state.
+ StepSize of ch. tracks in wall   = 174.9550 um  +- 188.4556 um 	 (nbSteps/track = 9.6539)
+ StepSize of ch. tracks in cavity = 2.6481 mm  +- 2.0419 mm 	 (nbSteps/track = 1.0455)
 ================== Deleting memory pools ===================
 Number of memory pools allocated: 9 of which, static: 0
-Dynamic pools deleted: 9 / Total memory freed: 0.069 MB
+Dynamic pools deleted: 9 / Total memory freed: 0.071 MB
 ============================================================
-RunManagerKernel is deleted. Good bye :)

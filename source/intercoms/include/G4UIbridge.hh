@@ -48,13 +48,13 @@ class G4UIbridge
   public:
 
     G4UIbridge(G4UImanager* localUI, G4String dir);
-    ~G4UIbridge();
+    ~G4UIbridge() = default;
 
     G4int ApplyCommand(const G4String& aCmd);
 
     inline G4UImanager* LocalUI() const { return localUImanager; }
     inline const G4String& DirName() const { return dirName; }
-    inline G4int DirLength() const { return dirName.length(); }
+    inline G4int DirLength() const { return (G4int)dirName.length(); }
 
   private:
 

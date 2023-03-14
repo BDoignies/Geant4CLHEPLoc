@@ -148,11 +148,11 @@ G4DecayProducts* G4MuonRadiativeDecayChannelWithSpin::DecayIt(G4double)
 
   // daughters'mass
   G4double daughtermass[4]; 
-  G4double sumofdaughtermass = 0.0;
+  //G4double sumofdaughtermass = 0.0;
   for (G4int index=0; index<4; ++index)
   {
     daughtermass[index] = G4MT_daughters[index]->GetPDGMass();
-    sumofdaughtermass += daughtermass[index];
+    //sumofdaughtermass += daughtermass[index];
   }
 
   G4double EMASS = daughtermass[0];
@@ -166,8 +166,6 @@ G4DecayProducts* G4MuonRadiativeDecayChannelWithSpin::DecayIt(G4double)
   G4DecayProducts *products = new G4DecayProducts(*parentparticle);
   delete parentparticle;
 
-  G4int i = 0;
-
   G4double eps = EMASS/EMMU;
 
   G4double som0, x, y, xx, yy, zz;
@@ -176,12 +174,6 @@ G4DecayProducts* G4MuonRadiativeDecayChannelWithSpin::DecayIt(G4double)
 
   for (std::size_t loop_counter1=0; loop_counter1<MAX_LOOP; ++loop_counter1)
   {
-    // leap1:
-
-    ++i;
-
-    // leap2:
-
     for (std::size_t loop_counter2=0; loop_counter2<MAX_LOOP; ++loop_counter2)
     {
       // -------------------------------------------------------------------

@@ -288,6 +288,7 @@ public:
 
   void dump()
   {
+/*
     G4double totA = 0.0, totZ = 0.0, totP = 0.0;
     //    G4cout <<"i \t ACV \t ZPCV \t PCV" << G4endl; 
     for(G4int i = 0; i <= iv; i++) {
@@ -301,6 +302,7 @@ public:
     }
     //    G4cout <<"Particle count index (iv) = " << iv << G4endl;
     //    G4cout <<"ABLA Total: A = " << totA << " Z = " << totZ <<  " momentum = " << totP << G4endl;
+*/
   }
 
   G4double acv[VOLANTSIZE],zpcv[VOLANTSIZE],pcv[VOLANTSIZE],xcv[VOLANTSIZE];
@@ -450,7 +452,9 @@ public:
   /**
    * Dump debugging output.
    */
-  void dump() {
+  void dump()
+  {
+/*
     G4int nProton = 0, nNeutron = 0;
     G4int nPiPlus = 0, nPiZero = 0, nPiMinus = 0;
     G4int nH2 = 0, nHe3 = 0, nAlpha = 0;
@@ -470,6 +474,7 @@ public:
       if(avv[i] ==  4 && zvv[i] ==  2) nAlpha++;
       if(                zvv[i] >   2) nFragments++;
     }
+*/
   }
 
   /**

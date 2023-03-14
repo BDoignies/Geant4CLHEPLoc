@@ -33,13 +33,19 @@
 
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleDefinition.hh"
+#include "G4PhysListUtil.hh"
 #include "G4EmParameters.hh"
 #include "G4VEnergyLossProcess.hh"
 
+#include "G4eMultipleScattering.hh"
 #include "G4MuMultipleScattering.hh"
 #include "G4hMultipleScattering.hh"
 #include "G4CoulombScattering.hh"
 #include "G4WentzelVIModel.hh"
+
+#include "G4ProcessManager.hh"
+#include "G4TransportationWithMsc.hh"
+#include "G4TransportationProcessType.hh"
 
 #include "G4MuBremsstrahlungModel.hh"
 #include "G4MuPairProductionModel.hh"
@@ -67,15 +73,22 @@
 
 #include "G4ChargedGeantino.hh"
 #include "G4Geantino.hh"
+#include "G4NeutrinoMu.hh"
+#include "G4AntiNeutrinoMu.hh"
+#include "G4NeutrinoE.hh"
+#include "G4AntiNeutrinoE.hh"
 
 #include "G4MuonPlus.hh"
 #include "G4MuonMinus.hh"
 #include "G4PionPlus.hh"
 #include "G4PionMinus.hh"
+#include "G4PionZero.hh"
 #include "G4KaonPlus.hh"
 #include "G4KaonMinus.hh"
 #include "G4Proton.hh"
 #include "G4AntiProton.hh"
+#include "G4Lambda.hh"
+#include "G4AntiLambda.hh"
 
 #include "G4Deuteron.hh"
 #include "G4Triton.hh"
@@ -346,9 +359,15 @@ void G4EmBuilder::ConstructChargedSS(G4hMultipleScattering* hmsc)
 
 void G4EmBuilder::ConstructMinimalEmSet()
 {
+  // instantiate singletones for physics
+  G4PhysListUtil::InitialiseParameters();
   // pseudo-particles
   G4Geantino::GeantinoDefinition();
   G4ChargedGeantino::ChargedGeantinoDefinition();
+  G4NeutrinoMu::NeutrinoMu();
+  G4AntiNeutrinoMu::AntiNeutrinoMu();
+  G4NeutrinoE::NeutrinoE();
+  G4AntiNeutrinoE::AntiNeutrinoE();
   // gamma
   G4Gamma::Gamma();
   // leptons
@@ -359,25 +378,63 @@ void G4EmBuilder::ConstructMinimalEmSet()
   // mesons
   G4PionPlus::PionPlus();
   G4PionMinus::PionMinus();
+  G4PionZero::PionZero();
   G4KaonPlus::KaonPlus();
   G4KaonMinus::KaonMinus();
   // barions
   G4Proton::Proton();
   G4AntiProton::AntiProton();
+  G4Neutron::Neutron();
+  G4AntiNeutron::AntiNeutron();
+  G4Lambda::Lambda();
+  G4AntiLambda::AntiLambda();
   // ions
   G4Deuteron::Deuteron();
   G4Triton::Triton();
   G4He3::He3();
   G4Alpha::Alpha();
-  G4GenericIon::GenericIonDefinition();
+  G4GenericIon::GenericIon();
 }
 
 void G4EmBuilder::PrepareEMPhysics()
 {
   G4LossTableManager* man = G4LossTableManager::Instance();
   G4VAtomDeexcitation* ad = man->AtomDeexcitation();
-  if(!ad) {
+  if(nullptr == ad) {
     ad = new G4UAtomicDeexcitation();
     man->SetAtomDeexcitation(ad);
+  }
+}
+
+void G4EmBuilder::ConstructElectronMscProcess(G4VMscModel* msc1, G4VMscModel* msc2,
+                                              G4ParticleDefinition* particle)
+{
+  G4TransportationWithMscType type =
+    G4EmParameters::Instance()->TransportationWithMsc();
+  G4ProcessManager* procManager = particle->GetProcessManager();
+  auto plist = procManager->GetProcessList();
+  G4int ptype = (0 < plist->size()) ? (*plist)[0]->GetProcessSubType() : 0;
+  if(type != G4TransportationWithMscType::fDisabled && ptype == TRANSPORTATION) {
+    // Remove default G4Transportation and replace with G4TransportationWithMsc.
+    procManager->RemoveProcess(0);
+    G4TransportationWithMsc* transportWithMsc = new G4TransportationWithMsc(
+      G4TransportationWithMsc::ScatteringType::MultipleScattering);
+    if(type == G4TransportationWithMscType::fMultipleSteps) {
+      transportWithMsc->SetMultipleSteps(true);
+    }
+    transportWithMsc->AddMscModel(msc1);
+    if(msc2 != nullptr) {
+      transportWithMsc->AddMscModel(msc2);
+    }
+    procManager->AddProcess(transportWithMsc, -1, 0, 0);
+  } else {
+    // Register as a separate process.
+    G4eMultipleScattering* msc = new G4eMultipleScattering;
+    msc->SetEmModel(msc1);
+    if(msc2 != nullptr) {
+      msc->SetEmModel(msc2);
+    }
+    G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+    ph->RegisterProcess(msc, particle);
   }
 }

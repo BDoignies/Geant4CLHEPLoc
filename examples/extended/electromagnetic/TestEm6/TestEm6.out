@@ -10,7 +10,7 @@
 
 
 **************************************************************
- Geant4 version Name: geant4-11-00-ref-00    (10-December-2021)
+ Geant4 version Name: geant4-11-01-patch-01    (10-February-2023)
                        Copyright : Geant4 Collaboration
                       References : NIM A 506 (2003), 250-303
                                  : IEEE-TNS 53 (2006), 270-278
@@ -30,7 +30,7 @@
 
 
  Material:   Carbon    density:  2.265 g/cm3   RadL:  18.851 cm   Nucl.Int.Length:  35.388 cm 
-                       Imean:  81.000 eV   temperature: 293.15 K  pressure:   1.00 atm
+                       Imean:  78.000 eV   temperature: 293.15 K  pressure:   1.00 atm
 
    --->  Element: C (C)   Z =  6.0   N =    12   A = 12.011 g/mole
          --->  Isotope:   C12   Z =  6   N =  12   A =  12.00 g/mole   abundance: 98.930 %
@@ -82,8 +82,10 @@ The cross section for GammaConversionToMuons is artificially increased by the Cr
 LPM effect enabled                                 1
 Enable creation and use of sampling tables         0
 Apply cuts on all EM processes                     0
+Use combined TransportationWithMsc                 Disabled
 Use general process                                0
 Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
 Enable sampling of quantum entanglement            0
 X-section factor for integral approach             0.8
 Min kinetic energy for tables                      100 eV 
@@ -99,7 +101,7 @@ Lowest triplet kinetic energy                      1 MeV
 Enable sampling of gamma linear polarisation       0
 5D gamma conversion model type                     0
 5D gamma conversion model on isolated ion          0
-Livermore data directory                           livermore
+Livermore data directory                           epics_2017
 =======================================================================
 ======                 Ionisation Parameters                   ========
 =======================================================================
@@ -109,8 +111,9 @@ Step function for light ions                       (0.2, 0.1 mm)
 Step function for general ions                     (0.2, 0.1 mm)
 Lowest e+e- kinetic energy                         1 keV
 Lowest muon/hadron kinetic energy                  1 keV
-Fluctuations of dE/dx are enabled                  1
 Use ICRU90 data                                    0
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Universal
 Use built-in Birks satuaration                     0
 Build CSDA range enabled                           0
 Use cut as a final range enabled                   0
@@ -191,7 +194,7 @@ Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
 Index : 0     used in the geometry : Yes
  Material : Iron
  Range cuts        :  gamma  1 km     e-  1 km     e+  1 km  proton 1 km 
- Energy thresholds :  gamma  9.54993 GeV    e-  9.54993 GeV    e+  9.54993 GeV proton 100 GeV
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 GeV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -205,23 +208,23 @@ G4GeometryManager::ReportVoxelStats -- Voxel Statistics
 ### Run 0 starts.
 ### Run 0 start.
 ###RunAction::BeginOfRunAction  Material:Iron
-... create H1 : h1 - done
-... create H1 : h2 - done
-... create H1 : h3 - done
-... create H1 : h4 - done
-... create H1 : h5 - done
-... create H1 : h6 - done
-... create H1 : h7 - done
-... create H1 : h8 - done
-... create H1 : h9 - done
-... create H1 : h10 - done
-... create H1 : h11 - done
-... create H1 : h12 - done
-... create H1 : h13 - done
-... create H1 : h14 - done
-... create H1 : h15 - done
-... create H1 : h16 - done
-... create H1 : h17 - done
+... create h1 : h1 - done
+... create h1 : h2 - done
+... create h1 : h3 - done
+... create h1 : h4 - done
+... create h1 : h5 - done
+... create h1 : h6 - done
+... create h1 : h7 - done
+... create h1 : h8 - done
+... create h1 : h9 - done
+... create h1 : h10 - done
+... create h1 : h11 - done
+... create h1 : h12 - done
+... create h1 : h13 - done
+... create h1 : h14 - done
+... create h1 : h15 - done
+... create h1 : h16 - done
+... create h1 : h17 - done
 
 ----> Histogram file is opened in testem6_0
 
@@ -267,7 +270,7 @@ Step#       X          Y          Z         KineE         dEStep    StepLeng   T
  Run terminated.
 Run Summary
   Number of events processed : 5
-  User=0.000000s Real=0.000847s Sys=0.000000s
+  User=0.000000s Real=0.000611s Sys=0.000000s
 ### RunAction::EndOfRunAction
 
  Number of process calls --->	GammaToMuPair : 5
@@ -311,7 +314,7 @@ Region <DefaultRegionForParallelWorld> --  -- is not associated to any world.
 Index : 0     used in the geometry : Yes
  Material : Iron
  Range cuts        :  gamma  1 km     e-  1 km     e+  1 km  proton 1 km 
- Energy thresholds :  gamma  9.54993 GeV    e-  9.54993 GeV    e+  9.54993 GeV proton 100 GeV
+ Energy thresholds :  gamma  9.54965 GeV    e-  9.54965 GeV    e+  9.54965 GeV proton 100 GeV
  Region(s) which use this couple : 
     DefaultRegionForTheWorld
 
@@ -323,23 +326,23 @@ Index : 0     used in the geometry : Yes
 ... create file : testem6_1.root - done
 ... open analysis file : testem6_1.root - done
 ... open analysis file : testem6_1.root - done
-... create H1 : h1 - done
-... create H1 : h2 - done
-... create H1 : h3 - done
-... create H1 : h4 - done
-... create H1 : h5 - done
-... create H1 : h6 - done
-... create H1 : h7 - done
-... create H1 : h8 - done
-... create H1 : h9 - done
-... create H1 : h10 - done
-... create H1 : h11 - done
-... create H1 : h12 - done
-... create H1 : h13 - done
-... create H1 : h14 - done
-... create H1 : h15 - done
-... create H1 : h16 - done
-... create H1 : h17 - done
+... create h1 : h1 - done
+... create h1 : h2 - done
+... create h1 : h3 - done
+... create h1 : h4 - done
+... create h1 : h5 - done
+... create h1 : h6 - done
+... create h1 : h7 - done
+... create h1 : h8 - done
+... create h1 : h9 - done
+... create h1 : h10 - done
+... create h1 : h11 - done
+... create h1 : h12 - done
+... create h1 : h13 - done
+... create h1 : h14 - done
+... create h1 : h15 - done
+... create h1 : h16 - done
+... create h1 : h17 - done
 
 ----> Histogram file is opened in testem6_1
 
@@ -357,7 +360,7 @@ Step#       X          Y          Z         KineE         dEStep    StepLeng   T
 
 Step#       X          Y          Z         KineE         dEStep    StepLeng   TrakLeng    Volume     Process
     0    -250 m        0 fm       0 fm       1 TeV          0 eV       0 fm       0 fm       Iron   initStep
-    1  -249.4 m        0 fm       0 fm       1 TeV          0 eV   61.83 cm   61.83 cm       Iron     ee2hadr
+    1  -249.4 m        0 fm       0 fm       1 TeV          0 eV   55.98 cm   55.98 cm       Iron     ee2hadr
 
 *********************************************************************************************************
 * G4Track Information:   Particle = e+,   Track ID = 1,   Parent ID = 0
@@ -365,7 +368,7 @@ Step#       X          Y          Z         KineE         dEStep    StepLeng   T
 
 Step#       X          Y          Z         KineE         dEStep    StepLeng   TrakLeng    Volume     Process
     0    -250 m        0 fm       0 fm       1 TeV          0 eV       0 fm       0 fm       Iron   initStep
-    1  -246.8 m        0 fm       0 fm       1 TeV          0 eV   3.226 m    3.226 m        Iron     ee2hadr
+    1  -247.1 m        0 fm       0 fm       1 TeV          0 eV   2.921 m    2.921 m        Iron     ee2hadr
 
 *********************************************************************************************************
 * G4Track Information:   Particle = e+,   Track ID = 1,   Parent ID = 0
@@ -381,11 +384,11 @@ Step#       X          Y          Z         KineE         dEStep    StepLeng   T
 
 Step#       X          Y          Z         KineE         dEStep    StepLeng   TrakLeng    Volume     Process
     0    -250 m        0 fm       0 fm       1 TeV          0 eV       0 fm       0 fm       Iron   initStep
-    1  -249.1 m        0 fm       0 fm       1 TeV          0 eV   90.58 cm   90.58 cm       Iron     ee2hadr
+    1  -249.2 m        0 fm       0 fm       1 TeV          0 eV      82 cm      82 cm       Iron     ee2hadr
  Run terminated.
 Run Summary
   Number of events processed : 5
-  User=0.000000s Real=0.000535s Sys=0.000000s
+  User=0.000000s Real=0.000446s Sys=0.000000s
 ### RunAction::EndOfRunAction
 
  Number of process calls --->	AnnihiToMuPair : 2	ee2hadr : 3

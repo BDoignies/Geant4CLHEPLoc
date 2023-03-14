@@ -80,7 +80,7 @@
 #  ui_win32          (WIN32 Style Application Command Line Interface)
 #
 #  motif             (Motif-X11/OpenGL Graphical User Interface)
-#  qt                (Qt5/OpenGL Graphical User Interface)
+#  qt                (Qt/OpenGL Graphical User Interface)
 #
 #  vis_opengl_x11    (OpenGL visualization with X11 interface)
 #  vis_opengl_win32  (OpenGL visualization with X11 interface)
@@ -249,15 +249,6 @@ set(Geant4_system_clhep_FOUND @GEANT4_USE_SYSTEM_CLHEP@)
 if(Geant4_system_clhep_FOUND)
   set(Geant4_builtin_clhep_FOUND FALSE)
   find_dependency(CLHEP @CLHEP_VERSION@ EXACT CONFIG)
-  # Explicitly use include_directories.
-  # - Geant4 and CLHEP use full imported targets with usage requirements,
-  #   but ROOT (used in the examples), ignores usage requirements in dictionary
-  #   generation steps.
-  #   To retain comptibility with examples, explictly include_directories
-  #   for CLHEP. This is a *pure workaround* for the use case of a project
-  #   using ROOT that generates dictionaries for class headers that
-  #   #include Geant4 headers...
-  include_directories(${CLHEP_INCLUDE_DIRS})
 else()
   set(Geant4_builtin_clhep_FOUND TRUE)
 endif()
@@ -273,17 +264,24 @@ if(NOT Geant4_builtin_zlib_FOUND)
   find_dependency(ZLIB @ZLIB_VERSION_STRING@)
 endif()
 
+# PTL/TBB
+# - Refind of PTL will refind TBB
 set(Geant4_system_ptl_FOUND @GEANT4_USE_SYSTEM_PTL@)
+set(Geant4_TBB_FOUND @GEANT4_USE_TBB@)
 if(Geant4_system_ptl_FOUND)
   set(Geant4_builtin_ptl_FOUND FALSE)
-  find_dependency(PTL @PTL_VERSION_STRING@)
+  if(Geant4_TBB_FOUND)
+    find_dependency(PTL @PTL_VERSION@ COMPONENTS TBB)
+  else()
+    find_dependency(PTL @PTL_VERSION@)
+  endif()
 else()
   # We know exactly where PTL is
   set(Geant4_builtin_ptl_FOUND TRUE)
   if(CMAKE_VERSION VERSION_GREATER 3.8.9999)
-    find_dependency(PTL @PTL_VERSION_STRING@ NO_DEFAULT_PATH PATHS "@PACKAGE_PTL_PREFIX@")
+    find_dependency(PTL NO_DEFAULT_PATH PATHS "@PACKAGE_PTL_PREFIX@")
   else()
-    find_package(PTL @PTL_VERSION_STRING@ REQUIRED NO_DEFAULT_PATH PATHS "@PACKAGE_PTL_PREFIX@")
+    find_package(PTL REQUIRED NO_DEFAULT_PATH PATHS "@PACKAGE_PTL_PREFIX@")
   endif()
 endif()
 
@@ -308,12 +306,6 @@ set(Geant4_smartstack_FOUND @GEANT4_USE_SMARTSTACK@)
 
 # - ParticleHP as HP
 set(Geant4_php_as_hp_FOUND @GEANT4_BUILD_PHP_AS_HP@)
-
-# - TBB
-set(Geant4_TBB_FOUND @GEANT4_USE_TBB@)
-if(Geant4_TBB_FOUND)
-  find_dependency(TBB @TBB_VERSION@)
-endif()
 
 # - TiMemory
 set(Geant4_timemory_FOUND @GEANT4_USE_TIMEMORY@)
@@ -341,7 +333,6 @@ endif()
 set(Geant4_usolids_FOUND @GEANT4_USE_USOLIDS_EITHER@)
 if(Geant4_usolids_FOUND)
   find_dependency(VecGeom @VecGeom_VERSION@)
-  include("${CMAKE_CURRENT_LIST_DIR}/G4VecGeomShim.cmake")
 endif()
 
 # - Freetype
@@ -408,18 +399,18 @@ endif()
 set(Geant4_qt_FOUND @GEANT4_USE_QT@)
 set(Geant4_qt3d_FOUND @GEANT4_USE_QT3D@)
 if(Geant4_qt_FOUND)
-  # Must always refind Qt5 to recreate imported targets. Because these
+  # Must always refind Qt to recreate imported targets. Because these
   # are in the public interface, always need linking.
-  find_dependency(Qt5Core REQUIRED)
-  find_dependency(Qt5Gui REQUIRED)
-  find_dependency(Qt5Widgets REQUIRED)
-  find_dependency(Qt5OpenGL REQUIRED)
-  find_dependency(Qt5PrintSupport REQUIRED)
+  find_dependency(Qt@QT_VERSION_MAJOR@Core REQUIRED)
+  find_dependency(Qt@QT_VERSION_MAJOR@Gui REQUIRED)
+  find_dependency(Qt@QT_VERSION_MAJOR@Widgets REQUIRED)
+  find_dependency(Qt@QT_VERSION_MAJOR@OpenGL REQUIRED)
+  find_dependency(Qt@QT_VERSION_MAJOR@PrintSupport REQUIRED)
 
   if(Geant4_qt3d_FOUND)
-    find_dependency(Qt53DCore @QT3D_MINIMUM_VERSION@ REQUIRED)
-    find_dependency(Qt53DExtras @QT3D_MINIMUM_VERSION@ REQUIRED)
-    find_dependency(Qt53DRender @QT3D_MINIMUM_VERSION@ REQUIRED)
+    find_dependency(Qt@QT_VERSION_MAJOR@3DCore @QT3D_MINIMUM_VERSION@ REQUIRED)
+    find_dependency(Qt@QT_VERSION_MAJOR@3DExtras @QT3D_MINIMUM_VERSION@ REQUIRED)
+    find_dependency(Qt@QT_VERSION_MAJOR@3DRender @QT3D_MINIMUM_VERSION@ REQUIRED)
   endif()
 
   # Also require OpenGL
@@ -535,7 +526,6 @@ if(Geant4_vis_toolssg_x11_gles_FOUND)
 
   if(("vis_toolssg_x11_gles" IN_LIST Geant4_FIND_COMPONENTS) OR Geant4_vis_all_FOUND)
     list(APPEND Geant4_DEFINITIONS -DG4VIS_USE_TOOLSSG_X11_GLES)
-    set(_geant4_use_toolssg_library ON)
   endif()
 endif()
 
@@ -545,7 +535,6 @@ if(Geant4_vis_toolssg_windows_gles_FOUND)
   find_dependency(OpenGL)
   if(("vis_toolssg_windows_gles" IN_LIST Geant4_FIND_COMPONENTS) OR Geant4_vis_all_FOUND)
     list(APPEND Geant4_DEFINITIONS -DG4VIS_USE_TOOLSSG_WINDOWS_GLES)
-    set(_geant4_use_toolssg_library ON)
   endif()
 endif()
 
@@ -562,7 +551,6 @@ if(Geant4_vis_toolssg_xt_gles_FOUND)
 
   if(("vis_toolssg_xt_gles" IN_LIST Geant4_FIND_COMPONENTS) OR Geant4_vis_all_FOUND)
     list(APPEND Geant4_DEFINITIONS -DG4VIS_USE_TOOLSSG_XT_GLES)
-    set(_geant4_use_toolssg_library ON)
   endif()
 endif()
 
@@ -572,7 +560,6 @@ if(Geant4_vis_toolssg_qt_gles_FOUND)
   find_dependency(OpenGL)
   if(("vis_toolssg_qt_gles" IN_LIST Geant4_FIND_COMPONENTS) OR Geant4_vis_all_FOUND)
     list(APPEND Geant4_DEFINITIONS -DG4VIS_USE_TOOLSSG_QT_GLES)
-    set(_geant4_use_toolssg_library ON)
   endif()
 endif()
 
@@ -635,13 +622,12 @@ set(_geant4_internal_libraries
   Geant4::G4GMocren${_geant4_lib_use_suffix}
   Geant4::G4visHepRep${_geant4_lib_use_suffix}
   Geant4::G4RayTracer${_geant4_lib_use_suffix}
-  Geant4::G4VRML${_geant4_lib_use_suffix})
+  Geant4::G4VRML${_geant4_lib_use_suffix}
+  Geant4::G4ToolsSG${_geant4_lib_use_suffix})
 
 # - G4OpenGL if it's requested.
 if(_geant4_use_opengl_library)
-  list(APPEND _geant4_internal_libraries
-    Geant4::G4OpenGL${_geant4_lib_use_suffix}
-    Geant4::G4gl2ps${_geant4_lib_use_suffix})
+  list(APPEND _geant4_internal_libraries Geant4::G4OpenGL${_geant4_lib_use_suffix})
   list(APPEND Geant4_DEFINITIONS -DG4VIS_USE_OPENGL)
 endif()
 
@@ -654,12 +640,6 @@ endif()
 # - G4OpenInventor if it's requested.
 if(_geant4_use_inventor_library)
   list(APPEND _geant4_internal_libraries Geant4::G4OpenInventor${_geant4_lib_use_suffix})
-endif()
-
-# - G4ToolsSG if it's requested.
-if(_geant4_use_toolssg_library)
-  list(APPEND _geant4_internal_libraries Geant4::G4ToolsSG${_geant4_lib_use_suffix})
-  list(APPEND Geant4_DEFINITIONS -DG4VIS_USE_TOOLSSG)
 endif()
 
 if(_geant4_use_vtk_library)
@@ -721,7 +701,6 @@ list(APPEND _geant4_internal_libraries
   ${_geant4_physicslists_library}
   Geant4::G4run${_geant4_lib_use_suffix}
   Geant4::G4event${_geant4_lib_use_suffix}
-  Geant4::G4tasking${_geant4_lib_use_suffix}
   Geant4::G4tracking${_geant4_lib_use_suffix}
   Geant4::G4parmodels${_geant4_lib_use_suffix}
   Geant4::G4processes${_geant4_lib_use_suffix}
@@ -733,7 +712,8 @@ list(APPEND _geant4_internal_libraries
   Geant4::G4graphics_reps${_geant4_lib_use_suffix}
   Geant4::G4intercoms${_geant4_lib_use_suffix}
   Geant4::G4global${_geant4_lib_use_suffix}
-  Geant4::G4tools${_geant4_lib_use_suffix}
+  # G4tools is INTERFACE, so same for both static/shared.
+  Geant4::G4tools
   )
 
 # - Any externals built by Geant4

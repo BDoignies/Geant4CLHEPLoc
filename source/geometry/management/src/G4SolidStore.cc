@@ -87,25 +87,13 @@ void G4SolidStore::Clean()
   //
   locked = true;  
 
-  std::size_t i = 0;
   G4SolidStore* store = GetInstance();
-
-#ifdef G4GEOMETRY_VOXELDEBUG
-  G4cout << "Deleting Solids ... ";
-#endif
 
   for(auto pos=store->cbegin(); pos!=store->cend(); ++pos)
   {
     if (fgNotifier != nullptr) { fgNotifier->NotifyDeRegistration(); }
-    delete *pos; ++i;
+    delete *pos;
   }
-
-#ifdef G4GEOMETRY_VOXELDEBUG
-  if (store->size() < i-1)
-    { G4cout << "No solids deleted. Already deleted by user ?" << G4endl; }
-  else
-    { G4cout << i-1 << " solids deleted !" << G4endl; }
-#endif
 
   store->bmap.clear(); store->mvalid = false;
   locked = false;
@@ -215,10 +203,11 @@ void G4SolidStore::DeRegister(G4VSolid* pSolid)
 }
 
 // ***************************************************************************
-// Retrieve the first solid pointer in the container having that name
+// Retrieve the first or last solid pointer in the container having that name
 // ***************************************************************************
 //
-G4VSolid* G4SolidStore::GetSolid(const G4String& name, G4bool verbose) const
+G4VSolid* G4SolidStore::GetSolid(const G4String& name, G4bool verbose,
+                                 G4bool reverseSearch) const
 {
   G4SolidStore* store = GetInstance();
   if (!store->mvalid)  { store->UpdateMap(); }
@@ -234,7 +223,14 @@ G4VSolid* G4SolidStore::GetSolid(const G4String& name, G4bool verbose) const
       G4Exception("G4SolidStore::GetSolid()",
                   "GeomMgt1001", JustWarning, message);
     }
-    return pos->second[0];
+    if(reverseSearch)
+    {
+      return pos->second[pos->second.size()-1];
+    }
+    else
+    {
+      return pos->second[0];
+    }
   }
   if (verbose)
   {

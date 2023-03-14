@@ -66,9 +66,16 @@ G4MultiUnion::~G4MultiUnion()
 }
 
 //______________________________________________________________________________
-void G4MultiUnion::AddNode(G4VSolid& solid, G4Transform3D& trans)
+void G4MultiUnion::AddNode(G4VSolid& solid, const G4Transform3D& trans)
 {
   fSolids.push_back(&solid);
+  fTransformObjs.push_back(trans);  // Store a local copy of transformations
+}
+
+//______________________________________________________________________________
+void G4MultiUnion::AddNode(G4VSolid* solid, const G4Transform3D& trans)
+{
+  fSolids.push_back(solid);
   fTransformObjs.push_back(trans);  // Store a local copy of transformations
 }
 
@@ -150,8 +157,8 @@ G4MultiUnion::DistanceToInNoVoxels(const G4ThreeVector& aPoint,
   G4ThreeVector localPoint, localDirection;
   G4double minDistance = kInfinity;
 
-  G4int numNodes = fSolids.size();
-  for (G4int i = 0 ; i < numNodes ; ++i)
+  std::size_t numNodes = fSolids.size();
+  for (std::size_t i = 0 ; i < numNodes ; ++i)
   {
     G4VSolid& solid = *fSolids[i];
     const G4Transform3D& transform = fTransformObjs[i];
@@ -171,11 +178,11 @@ G4double G4MultiUnion::DistanceToInCandidates(const G4ThreeVector& aPoint,
                                               std::vector<G4int>& candidates,
                                               G4SurfBits& bits) const
 {
-  G4int candidatesCount = candidates.size();
+  std::size_t candidatesCount = candidates.size();
   G4ThreeVector localPoint, localDirection;
 
   G4double minDistance = kInfinity;
-  for (G4int i = 0 ; i < candidatesCount; ++i)
+  for (std::size_t i = 0 ; i < candidatesCount; ++i)
   {
     G4int candidate = candidates[i];
     G4VSolid& solid = *fSolids[candidate];
@@ -254,8 +261,8 @@ G4double G4MultiUnion::DistanceToOutNoVoxels(const G4ThreeVector& aPoint,
   G4double resultDistToOut = 0;
   G4ThreeVector currentPoint = aPoint;
 
-  G4int numNodes = fSolids.size();
-  for (G4int i = 0; i < numNodes; ++i)
+  G4int numNodes = (G4int)fSolids.size();
+  for (auto i = 0; i < numNodes; ++i)
   {
     if (i != ignoredSolid)
     {
@@ -318,8 +325,8 @@ G4double G4MultiUnion::DistanceToOutVoxels(const G4ThreeVector& aPoint,
   G4ThreeVector direction = aDirection.unit();
   std::vector<G4int> candidates;
   G4double distance = 0;
-  G4int numNodes = 2*fSolids.size();
-  G4int count=0;
+  std::size_t numNodes = 2*fSolids.size();
+  std::size_t count=0;
 
   if (fVoxels.GetCandidatesVoxelArray(aPoint, candidates))
   {
@@ -338,8 +345,8 @@ G4double G4MultiUnion::DistanceToOutVoxels(const G4ThreeVector& aPoint,
       G4int maxCandidate = 0;
       G4ThreeVector maxLocalPoint;
 
-      G4int limit = candidates.size();
-      for (G4int i = 0 ; i < limit ; ++i)
+      std::size_t limit = candidates.size();
+      for (std::size_t i = 0 ; i < limit ; ++i)
       {
         G4int candidate = candidates[i];
         // ignore the current component (that you just got out of) since
@@ -472,11 +479,17 @@ EInside G4MultiUnion::InsideWithExclusion(const G4ThreeVector& aPoint,
   // surface, the surface points will be considered as kSurface, while points
   // located around will correspond to kInside (cf. G4UnionSolid)
 
-  G4int size = surfaces.size();
-  for (G4int i = 0; i < size - 1; ++i)
+  std::size_t size = surfaces.size();
+
+  if (size == 0)
+  {
+    return EInside::kOutside;
+  }
+
+  for (std::size_t i = 0; i < size - 1; ++i)
   {
     G4MultiUnionSurface& left = surfaces[i];
-    for (G4int j = i + 1; j < size; ++j)
+    for (std::size_t j = i + 1; j < size; ++j)
     {
       G4MultiUnionSurface& right = surfaces[j];
       G4ThreeVector n, n2;
@@ -487,9 +500,7 @@ EInside G4MultiUnion::InsideWithExclusion(const G4ThreeVector& aPoint,
     }
   }
 
-  location = size ? EInside::kSurface : EInside::kOutside;
-
-  return location;
+  return EInside::kSurface;
 }
 
 //______________________________________________________________________________
@@ -519,8 +530,8 @@ EInside G4MultiUnion::InsideNoVoxels(const G4ThreeVector& aPoint) const
   EInside location = EInside::kOutside;
   G4int countSurface = 0;
 
-  G4int numNodes = fSolids.size();
-  for (G4int i = 0 ; i < numNodes ; ++i)
+  G4int numNodes = (G4int)fSolids.size();
+  for (auto i = 0 ; i < numNodes ; ++i)
   {
     G4VSolid& solid = *fSolids[i];
     G4Transform3D transform = GetTransformation(i);
@@ -546,8 +557,8 @@ void G4MultiUnion::Extent(EAxis aAxis, G4double& aMin, G4double& aMax) const
   // Determines the bounding box for the considered instance of "UMultipleUnion"
   G4ThreeVector min, max;
 
-  G4int numNodes = fSolids.size();
-  for (G4int i = 0 ; i < numNodes ; ++i)
+  G4int numNodes = (G4int)fSolids.size();
+  for (auto i = 0 ; i < numNodes ; ++i)
   {
     G4VSolid& solid = *fSolids[i];
     G4Transform3D transform = GetTransformation(i);
@@ -654,8 +665,8 @@ G4ThreeVector G4MultiUnion::SurfaceNormal(const G4ThreeVector& aPoint) const
   // determine weather we are in voxel area
   if (fVoxels.GetCandidatesVoxelArray(aPoint, candidates))
   {
-    G4int limit = candidates.size();
-    for (G4int i = 0 ; i < limit ; ++i)
+    std::size_t limit = candidates.size();
+    for (std::size_t i = 0 ; i < limit ; ++i)
     {
       G4int candidate = candidates[i];
       const G4Transform3D& transform = fTransformObjs[candidate];
@@ -728,8 +739,8 @@ G4double G4MultiUnion::DistanceToOut(const G4ThreeVector& point) const
   // but only an undervalue (cf. overlaps)
   fVoxels.GetCandidatesVoxelArray(point, candidates);
 
-  G4int limit = candidates.size();
-  for (G4int i = 0; i < limit; ++i)
+  std::size_t limit = candidates.size();
+  for (std::size_t i = 0; i < limit; ++i)
   {
     G4int candidate = candidates[i];
 
@@ -762,8 +773,8 @@ G4double G4MultiUnion::DistanceToIn(const G4ThreeVector& point) const
   G4double safetyMin = kInfinity;
   G4ThreeVector localPoint;
 
-  G4int numNodes = fSolids.size();
-  for (G4int j = 0; j < numNodes; ++j)
+  std::size_t numNodes = fSolids.size();
+  for (std::size_t j = 0; j < numNodes; ++j)
   {
     G4ThreeVector dxyz;
     if (j > 0)
@@ -826,11 +837,11 @@ G4int G4MultiUnion::SafetyFromOutsideNumberNode(const G4ThreeVector& aPoint,
 
   const std::vector<G4VoxelBox>& boxes = fVoxels.GetBoxes();
   safetyMin = kInfinity;
-  G4int safetyNode = 0;
+  std::size_t safetyNode = 0;
   G4ThreeVector localPoint;
 
-  G4int numNodes = fSolids.size();
-  for (G4int i = 0; i < numNodes; ++i)
+  std::size_t numNodes = fSolids.size();
+  for (std::size_t i = 0; i < numNodes; ++i)
   {
     G4double d2xyz = 0.;
     G4double dxyz0 = std::abs(aPoint.x() - boxes[i].pos.x()) - boxes[i].hlen.x();
@@ -857,7 +868,7 @@ G4int G4MultiUnion::SafetyFromOutsideNumberNode(const G4ThreeVector& aPoint,
       safetyNode = i;
     }
   }
-  return safetyNode;
+  return (G4int)safetyNode;
 }
 
 //______________________________________________________________________________
@@ -907,14 +918,14 @@ void G4MultiUnion::TransformLimits(G4ThreeVector& min, G4ThreeVector& max,
 //______________________________________________________________________________
 std::ostream& G4MultiUnion::StreamInfo(std::ostream& os) const
 {
-  G4int oldprc = os.precision(16);
+  G4long oldprc = os.precision(16);
   os << "-----------------------------------------------------------\n"
      << "                *** Dump for solid - " << GetName() << " ***\n"
      << "                ===================================================\n"
      << " Solid type: G4MultiUnion\n"
      << " Parameters: \n";
-     G4int numNodes = fSolids.size();
-     for (G4int i = 0 ; i < numNodes ; ++i)
+     std::size_t numNodes = fSolids.size();
+     for (std::size_t i = 0 ; i < numNodes ; ++i)
      {
       G4VSolid& solid = *fSolids[i];
       solid.StreamInfo(os);

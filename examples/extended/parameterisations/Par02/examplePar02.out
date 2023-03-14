@@ -11,7 +11,7 @@ Environment variable "G4FORCE_RUN_MANAGER_TYPE" enabled with value == Serial. Fo
 
 
 **************************************************************
- Geant4 version Name: geant4-11-00-ref-00    (10-December-2021)
+ Geant4 version Name: geant4-11-01-patch-01    (10-February-2023)
                        Copyright : Geant4 Collaboration
                       References : NIM A 506 (2003), 250-303
                                  : IEEE-TNS 53 (2006), 270-278
@@ -31,8 +31,6 @@ Geometry loaded from  file .......Par02FullDetector.gdml
 
 ecal !!!
 
-ecal !!!
-
 tracker !!!
 
 ecal !!!
@@ -41,7 +39,7 @@ ecal !!!
 
 ecal !!!
 
-hcal !!!
+ecal !!!
 
 hcal !!!
 
@@ -50,42 +48,8 @@ hcal !!!
 hcal !!!
 
 hcal !!!
-Warning : Region <MuonEndCap_1> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonEndCap_2> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonEndCap_3> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonEndCap_4> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonEndCap_5> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonEndCap_6> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonForward_1> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonForward_2> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonForward_3> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonForward_4> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonForward_5> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
-Warning : Region <MuonForward_6> does not have specific production cuts,
-even though it appears in the current tracking world.
-Default cuts are used for this region.
+
+hcal !!!
 Instantiating Visualization Manager.......
 Visualization Manager instantiating with verbosity "warnings (3)"...
 Visualization Manager initialising...
@@ -99,6 +63,8 @@ Registered graphics systems are:
   RayTracer (RayTracer)
   VRML2FILE (VRML2FILE)
   gMocrenFile (gMocrenFile)
+  TOOLSSG_OFFSCREEN (TSG_OFFSCREEN)
+  TOOLSSG_OFFSCREEN (TSG_OFFSCREEN, TSG_FILE)
   OpenGLImmediateQt (OGLIQt, OGLI)
   OpenGLStoredQt (OGLSQt, OGL, OGLS)
   OpenGLImmediateXm (OGLIXm, OGLIQt_FALLBACK)
@@ -106,6 +72,10 @@ Registered graphics systems are:
   OpenGLImmediateX (OGLIX, OGLIQt_FALLBACK, OGLIXm_FALLBACK)
   OpenGLStoredX (OGLSX, OGLSQt_FALLBACK, OGLSXm_FALLBACK)
   RayTracerX (RayTracerX)
+  Qt3D (Qt3D)
+  TOOLSSG_X11_GLES (TSG_X11_GLES, TSGX11, TSG_XT_GLES_FALLBACK)
+  TOOLSSG_XT_GLES (TSG_XT_GLES, TSGXt, TSG_QT_GLES_FALLBACK)
+  TOOLSSG_QT_GLES (TSG_QT_GLES, TSGQt, TSG)
 
 Registering model factories...
 
@@ -1147,8 +1117,11 @@ See commands in /vis/modeling/trajectories/ for other options.
  ________Tracker model triggered _________
 ... write file : DefaultOutput.root - done
 ... close file : DefaultOutput.root - done
-0 events have been kept for refreshing and/or reviewing.
-  "/vis/reviewKeptEvents" to review them one by one.
-  "/vis/enable", then "/vis/viewer/flush" or "/vis/viewer/rebuild" to see them accumulated.
+There are 3 h1 histograms
+  0 with      0 entries: momentum smeared in tracker
+  1 with      0 entries: energy smeared in EMCal
+  2 with      0 entries: energy smeared in HCal
+List them with "/analysis/list".
+View them with "/vis/plot" or "/vis/reviewPlots".
 Graphics systems deleted.
 Visualization Manager deleting...

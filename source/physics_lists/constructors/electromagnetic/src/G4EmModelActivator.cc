@@ -97,6 +97,7 @@
 #include "G4GoudsmitSaundersonMscModel.hh"
 #include "G4LowEPComptonModel.hh"
 #include "G4BetheHeitler5DModel.hh"
+#include "G4LindhardSorensenIonModel.hh"
 
 #include "G4LivermorePhotoElectricModel.hh"
 #include "G4LivermoreComptonModel.hh"
@@ -146,7 +147,7 @@ G4EmModelActivator::G4EmModelActivator(const G4String& emphys)
 void G4EmModelActivator::ActivateEmOptions()
 {
   const std::vector<G4String>& regnamesPhys = theParameters->RegionsPhysics();
-  G4int nreg = regnamesPhys.size();
+  std::size_t nreg = regnamesPhys.size();
   if(0 == nreg) { return; }
   G4int verbose = theParameters->Verbose() - 1; 
   if(verbose > 0) {
@@ -175,7 +176,7 @@ void G4EmModelActivator::ActivateEmOptions()
   // general high energy limit
   G4double highEnergy = theParameters->MaxKinEnergy();
 
-  for(G4int i=0; i<nreg; ++i) {
+  for(std::size_t i=0; i<nreg; ++i) {
     G4String reg = regnamesPhys[i];
     if(verbose > 0) {
       G4cout << i << ". region <" << reg << ">; type <" << typesPhys[i] << "> " 
@@ -396,7 +397,7 @@ void G4EmModelActivator::ActivateEmOptions()
 void G4EmModelActivator::ActivatePAI()
 {
   const std::vector<G4String> regnamesPAI = theParameters->RegionsPAI();
-  G4int nreg = regnamesPAI.size();
+  std::size_t nreg = regnamesPAI.size();
   if(0 == nreg) { return; }
   G4int verbose = theParameters->Verbose() - 1;
   if(verbose > 0) {
@@ -417,7 +418,7 @@ void G4EmModelActivator::ActivatePAI()
   const G4ParticleDefinition* mumi = G4MuonMinus::MuonMinus();
   const G4ParticleDefinition* gion = G4GenericIon::GenericIon();
 
-  for(G4int i = 0; i < nreg; ++i) {
+  for(std::size_t i = 0; i < nreg; ++i) {
     const G4ParticleDefinition* p = nullptr;
     if(particlesPAI[i] != "all") {
       p = G4ParticleTable::GetParticleTable()->FindParticle(particlesPAI[i]);
@@ -469,24 +470,32 @@ void G4EmModelActivator::ActivatePAI()
 	em = mod;
 	fm = mod;
       }
-      // added PAI model above low energy limit
-      em->SetLowEnergyLimit(emin);
-      proc->AddEmModel(0, em, fm, r);
-
-      // added low energy model
+      // first added the default model for world
+      // second added low energy model below PAI threshold in the region
+      // finally added PAI for the region
+      G4VEmModel* em0 = nullptr;
+      G4VEmFluctuationModel* fm0 = nullptr;
       if(namep == "eIoni") {
-	em = new G4MollerBhabhaModel();
-	fm = new G4UniversalFluctuation();
+        fm0 = new G4UniversalFluctuation();
+        proc->SetEmModel(new G4MollerBhabhaModel());
+        proc->SetFluctModel(fm0);
+        em0 = new G4MollerBhabhaModel();
       } else if(namep == "ionIoni") {
-	em = new G4BraggIonModel();
-        fm = new G4IonFluctuations();
+        fm0 = new G4IonFluctuations();
+        proc->SetEmModel(new G4LindhardSorensenIonModel());
+        proc->SetFluctModel(fm0);
+        em0 = new G4LindhardSorensenIonModel();
       } else {
-	em = new G4BraggModel();
-	fm = new G4UniversalFluctuation();
+        fm0 = new G4UniversalFluctuation();
+        proc->SetEmModel(new G4BraggModel());
+        proc->SetEmModel(new G4BetheBlochModel());
+        proc->SetFluctModel(fm0);
+        em0 = new G4BraggModel();
       }
-      em->SetHighEnergyLimit(emin);
+      em0->SetHighEnergyLimit(emin);
+      proc->AddEmModel(-1, em0, fm0, r);
+      em->SetLowEnergyLimit(emin);
       proc->AddEmModel(-1, em, fm, r);
-
       if(verbose > 0) {
 	G4cout << "### G4EmModelActivator: add <" << typesPAI[i]
 	       << "> model for " << particlesPAI[i]
@@ -502,7 +511,7 @@ void G4EmModelActivator::ActivatePAI()
 void G4EmModelActivator::ActivateMicroElec()
 {
   const std::vector<G4String> regnamesME = theParameters->RegionsMicroElec();
-  G4int nreg = regnamesME.size();
+  std::size_t nreg = regnamesME.size();
   if(0 == nreg)
   {
     return;
@@ -555,7 +564,7 @@ void G4EmModelActivator::ActivateMicroElec()
   G4LowECapture* ecap = new G4LowECapture(elowest);
   eman->AddDiscreteProcess(ecap);
 
-  for(G4int i = 0; i < nreg; ++i)
+  for(std::size_t i = 0; i < nreg; ++i)
   {
 
     G4String reg = regnamesME[i];

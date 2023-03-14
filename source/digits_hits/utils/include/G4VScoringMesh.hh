@@ -69,22 +69,15 @@ class G4VScoringMesh
 
  public:
   G4VScoringMesh(const G4String& wName);
-  virtual ~G4VScoringMesh();
+  virtual ~G4VScoringMesh() = default;
 
  public:  // with description
-  // a pure virtual function to construct this mesh geometry
-  void Construct(G4VPhysicalVolume* fWorldPhys);
+  virtual void Construct(G4VPhysicalVolume* fWorldPhys);
+  virtual void WorkerConstruct(G4VPhysicalVolume* fWorldPhys);
 
-  void WorkerConstruct(G4VPhysicalVolume* fWorldPhys);
-
- protected:
-  virtual void SetupGeometry(G4VPhysicalVolume* fWorldPhys) = 0;
-
- public:  // with description
   // list infomration of this mesh
   virtual void List() const;
 
- public:  // with description
   // get the world name
   // If this ScoringMesh is for parallel world, it returns the name of the
   // parallel world If this ScoringMesh is for real world logical volume, it
@@ -141,10 +134,9 @@ class G4VScoringMesh
   // get a rotation matrix
   G4RotationMatrix GetRotationMatrix() const
   {
-    if(fRotationMatrix)
+    if(fRotationMatrix != nullptr)
       return *fRotationMatrix;
-    else
-      return G4RotationMatrix::IDENTITY;
+    return G4RotationMatrix::IDENTITY;
   }
 
   // set number of segments of this mesh
@@ -164,10 +156,7 @@ class G4VScoringMesh
   // get whether current primitive scorer is set or not
   G4bool IsCurrentPrimitiveScorerNull()
   {
-    if(fCurrentPS == nullptr)
-      return true;
-    else
-      return false;
+    return fCurrentPS == nullptr;
   }
   // get unit of primitive scorer by the name
   G4String GetPSUnit(const G4String& psname);
@@ -195,6 +184,40 @@ class G4VScoringMesh
   // protected:
   // get registered primitive socrer by the name
   G4VPrimitiveScorer* GetPrimitiveScorer(const G4String& name);
+
+  inline void SetMeshElementLogical(G4LogicalVolume* val)
+  {
+    fMeshElementLogical = val;
+  }
+  inline G4LogicalVolume* GetMeshElementLogical() const
+  {
+    return fMeshElementLogical;
+  }
+
+  inline void SetParallelWorldProcess(G4ParallelWorldProcess* proc)
+  {
+    fParallelWorldProcess = proc;
+  }
+  inline G4ParallelWorldProcess* GetParallelWorldProcess() const
+  {
+    return fParallelWorldProcess;
+  }
+  inline void GeometryHasBeenDestroyed()
+  {
+    fGeometryHasBeenDestroyed = true;
+    fMeshElementLogical       = nullptr;
+  }
+
+  // Geometry hirarchy level (bottom = 0) to be used as the copy number
+  // This is used only for real-world scorer
+  inline void SetCopyNumberLevel(G4int val) { copyNumberLevel = val; }
+  inline G4int GetCopyNumberLevel() const { return copyNumberLevel; }
+
+  G4bool LayeredMassFlg() { return layeredMassFlg; }
+
+ protected:
+  // a pure virtual function to construct this mesh geometry
+  virtual void SetupGeometry(G4VPhysicalVolume* fWorldPhys) = 0;
 
  protected:
   G4String fWorldName;
@@ -225,52 +248,15 @@ class G4VScoringMesh
 
   G4LogicalVolume* fMeshElementLogical;
 
- public:
-  inline void SetMeshElementLogical(G4LogicalVolume* val)
-  {
-    fMeshElementLogical = val;
-  }
-  inline G4LogicalVolume* GetMeshElementLogical() const
-  {
-    return fMeshElementLogical;
-  }
-
- protected:
   G4ParallelWorldProcess* fParallelWorldProcess;
   G4bool fGeometryHasBeenDestroyed;
-
- public:
-  inline void SetParallelWorldProcess(G4ParallelWorldProcess* proc)
-  {
-    fParallelWorldProcess = proc;
-  }
-  inline G4ParallelWorldProcess* GetParallelWorldProcess() const
-  {
-    return fParallelWorldProcess;
-  }
-  inline void GeometryHasBeenDestroyed()
-  {
-    fGeometryHasBeenDestroyed = true;
-    fMeshElementLogical       = nullptr;
-  }
-
- protected:
+ 
   G4int copyNumberLevel;
 
- public:
-  // Geometry hirarchy level (bottom = 0) to be used as the copy number
-  // This is used only for real-world scorer
-  inline void SetCopyNumberLevel(G4int val) { copyNumberLevel = val; }
-  inline G4int GetCopyNumberLevel() const { return copyNumberLevel; }
-
- protected:
   // This flag may be set to true for Probe scoring mesh.
   // There is no public set method for this boolean flag, but it should be set
   // to true through SetMaterial() method of Probe scoring mesh.
   G4bool layeredMassFlg;
-
- public:
-  G4bool LayeredMassFlg() { return layeredMassFlg; }
 };
 
 #endif

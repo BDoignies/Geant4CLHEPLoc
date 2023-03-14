@@ -11,7 +11,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
 #include <BaseTsd.h>
 #include <io.h>
 #include <windows.h>
@@ -94,7 +94,6 @@ xDataXML_document *xDataXML_importFile2( statusMessageReporting *smr, char const
     int f;
     char buffer[10 * 1000];
     ssize_t count, n = sizeof( buffer ) - 1;
-    ssize_t s = 0;
     xDataXML_document *doc;
 
     if( ( doc = xDataXML_mallocDoc( smr ) ) == NULL ) return( NULL );
@@ -105,7 +104,6 @@ xDataXML_document *xDataXML_importFile2( statusMessageReporting *smr, char const
                 smr_setReportError2( smr, xDataTOM_smrLibraryID, xDataXML_errFileError, "could not open XML file %s", fileName ); }
         else {
                 while( ( count = read( f, buffer, n ) ) > 0 ) {
-                    s += count;
                     buffer[count] = 0;
                     if( xDataXML_parse( doc, buffer ) ) break;
                     if( !smr_isOk( doc->smr ) ) break;

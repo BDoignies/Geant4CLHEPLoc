@@ -339,7 +339,7 @@ void G4ElasticHadrNucleusHE::InitialiseModel()
   if(!isMaster) { return; }
   G4ProductionCutsTable* theCoupleTable=
     G4ProductionCutsTable::GetProductionCutsTable();
-  size_t numOfCouples = theCoupleTable->GetTableSize();
+  G4int numOfCouples = (G4int)theCoupleTable->GetTableSize();
   
   for(G4int i=0; i<2; ++i) {
     const G4ParticleDefinition* p = G4PionPlus::PionPlus();
@@ -349,19 +349,19 @@ void G4ElasticHadrNucleusHE::InitialiseModel()
     iHadron1  = fHadronType1[i];
     hMass     = p->GetPDGMass()*invGeV;
     hMass2    = hMass*hMass;
-    for(size_t j=0; j<numOfCouples; ++j) {
+    for(G4int j=0; j<numOfCouples; ++j) {
       auto mat = theCoupleTable->GetMaterialCutsCouple(j)->GetMaterial();
       auto elmVec = mat->GetElementVector();
-      size_t numOfElem = mat->GetNumberOfElements();
-      for(size_t k=0; k<numOfElem; ++k) {
-	G4int Z = std::min((*elmVec)[k]->GetZasInt(), ZMAX-1);
-	if(!fElasticData[i][Z]) { 
+      std::size_t numOfElem = mat->GetNumberOfElements();
+      for(std::size_t k=0; k<numOfElem; ++k) {
+        G4int Z = std::min((*elmVec)[k]->GetZasInt(), ZMAX-1);
+        if(!fElasticData[i][Z]) { 
           if(1 == i && Z > 1) { 
-	    fElasticData[1][Z] = fElasticData[0][Z]; 
-	  } else {
-	    FillData(p, i, Z);
-	  } 
-	}
+            fElasticData[1][Z] = fElasticData[0][Z]; 
+          } else {
+            FillData(p, i, Z);
+          } 
+        }
       }
     }
   }
@@ -570,7 +570,7 @@ G4ElasticHadrNucleusHE::HadronNucleusQ2_2(const G4ElasticData* pElD,
   R1    = pElD->R1;
   dQ2   = pElD->dQ2;
   Q2max = pElD->maxQ2[idx];
-  G4int length = (pElD->fCumProb[idx]).size();
+  G4int length = (G4int)(pElD->fCumProb[idx]).size();
 
   G4double Rand = G4UniformRand();
 
@@ -873,7 +873,7 @@ G4ElasticHadrNucleusHE::HadrNucDifferCrSec(G4int A, G4double aQ2)
 
   G4double ImElasticAmpl0 = 0;
   G4double ReElasticAmpl0 = 0;
-  G4double Tot1=0, exp1;
+  G4double exp1;
 
   for(G4int i=1; i<=A; ++i) {
     N  *= (-Unucl*Rho2*(A-i+1)/(G4double)i);
@@ -892,14 +892,12 @@ G4ElasticHadrNucleusHE::HadrNucDifferCrSec(G4int A, G4double aQ2)
     G4double dcos = N*std::cos(FiH*i);
     ReElasticAmpl0  += Prod1*N*std::sin(FiH*i);
     ImElasticAmpl0  += Prod1*dcos;
-    Tot1            += medTot*dcos;
     if(std::abs(Prod1*N/ImElasticAmpl0) < 0.000001) break;
   }      // i
 
   static const G4double pi25 = CLHEP::pi/2.568;
   ImElasticAmpl0 *= pi25;   // The amplitude in mB
   ReElasticAmpl0 *= pi25;   // The amplitude in mB
-  Tot1           *= 2*pi25;
 
   G4double C1 = R13Ap*R13Ap*0.5*DDSec1p;
   G4double C2 = 2*R23Ap*R13Ap*0.5*DDSec2p;
@@ -952,7 +950,6 @@ G4ElasticHadrNucleusHE::HadrNucDifferCrSec(G4int A, G4double aQ2)
 			 (ImElasticAmpl0+Din1)*
 			 (ImElasticAmpl0+Din1))/twopi;
 
-  Tot1  -= DTot1;
   Dtot11 = DTot1;
   aAIm   = ImElasticAmpl0;
   aDIm   = Din1;
@@ -1384,7 +1381,7 @@ G4ElasticHadrNucleusHE::InFileName(std::ostringstream& ss,
 				   const G4ParticleDefinition* p, G4int Z)
 {
   if(!fDirectory) {
-    fDirectory = std::getenv("G4LEDATA");
+    fDirectory = G4FindDataDir("G4LEDATA");
     if (fDirectory) { 
       ss << fDirectory << "/";
     }
@@ -1426,10 +1423,10 @@ G4bool G4ElasticHadrNucleusHE::ReadLine(std::ifstream& infile,
 void G4ElasticHadrNucleusHE::WriteLine(std::ofstream& outfile, 
 				       std::vector<G4double>& v)
 {
-  G4int n = v.size();
+  std::size_t n = v.size();
   outfile << n << G4endl;
   if(n > 0) {
-    for(G4int i=0; i<n; ++i) {
+    for(std::size_t i=0; i<n; ++i) {
       outfile << v[i] << " ";
     }
     outfile << G4endl;
@@ -1437,5 +1434,3 @@ void G4ElasticHadrNucleusHE::WriteLine(std::ofstream& outfile,
 }
 
 ///////////////////////////////////////////////////////////
-
-

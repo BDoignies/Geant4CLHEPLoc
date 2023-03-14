@@ -103,7 +103,7 @@ G4VIntersectionLocator::printStatus( const G4FieldTrack& StartFT,
   const G4ThreeVector CurrentUnitVelocity = CurrentFT.GetMomentumDir();
 
   G4double step_len = CurrentFT.GetCurveLength() - StartFT.GetCurveLength();
-  G4int oldprc;  // cout/cerr precision settings
+  G4long oldprc;  // cout/cerr precision settings
 
   if( ((stepNo == 0) && (verboseLevel <3)) || (verboseLevel >= 3) )
   {
@@ -296,17 +296,19 @@ ReEstimateEndpoint( const G4FieldTrack& CurrentStateA,
       G4Exception("G4VIntersectionLocator::ReEstimateEndpoint()",
                   "GeomNav1002", JustWarning, message);
     }
+/*
 #else
   // Statistics on the RMS value of the corrections
 
-  static G4ThreadLocal G4int    noCorrections = 0;
-  static G4ThreadLocal G4double sumCorrectionsSq = 0;
+  static G4ThreadLocal G4int noCorrections = 0;
   ++noCorrections; 
   if( goodAdvance )
   {
+    static G4ThreadLocal G4double sumCorrectionsSq;
     sumCorrectionsSq += (EstimatedEndStateB.GetPosition() - 
                          newEndPoint.GetPosition()).mag2();
   }
+*/
 #endif
 
   return retEndPoint;
@@ -787,7 +789,7 @@ ReportReversedPoints( std::ostringstream& msg,
        << "      Point B' (end)   is " << B_PtVel << G4endl;
    msg << "      fEpsStep= " << epsStep << G4endl << G4endl;
 
-   G4int oldprc = msg.precision(20);
+   G4long oldprc = msg.precision(20);
    msg << " In full precision, the position, momentum, E_kin, length, rest mass "
        << " ... are: " << G4endl;
    msg << " Point A[0] (Curve   start) is " << StartPointVel << G4endl

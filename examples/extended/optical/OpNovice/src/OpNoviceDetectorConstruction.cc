@@ -129,13 +129,20 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct()
   G4MaterialPropertiesTable* myMPT1 = new G4MaterialPropertiesTable();
 
   // Values can be added to the material property table individually.
-  // Check that group velocity is calculated from RINDEX
-  myMPT1->AddProperty("RINDEX", &photonEnergy[0], &refractiveIndex1[0], true,
-                      true);
+  // With this method, spline interpolation cannot be set. Arguments
+  // createNewKey and spline both take their default values of false.
+  // Need to specify the number of entries (1) in the arrays, as an argument
+  // to AddProperty.
+  G4int numEntries = 1;
+  myMPT1->AddProperty("RINDEX", &photonEnergy[0], &refractiveIndex1[0],
+                      numEntries);
+
   for(size_t i = 1; i < photonEnergy.size(); ++i)
   {
     myMPT1->AddEntry("RINDEX", photonEnergy[i], refractiveIndex1[i]);
   }
+
+  // Check that group velocity is calculated from RINDEX
   if(myMPT1->GetProperty("RINDEX")->GetVectorLength() !=
      myMPT1->GetProperty("GROUPVEL")->GetVectorLength())
   {
@@ -146,10 +153,16 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct()
                 FatalException, ed);
   }
 
+  // Adding a property from two std::vectors. Argument createNewKey is false
+  // and spline is true.
   myMPT1->AddProperty("ABSLENGTH", photonEnergy, absorption, false, true);
-  // adding property with a C-style array
+
+  // Adding a property using a C-style array.
+  // Spline interpolation isn't used for scintillation.
+  // Arguments spline and createNewKey both take default value false.
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", energyArray, scintilFastArray,
-                      lenArray, false, true);
+                      lenArray);
+
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", photonEnergy, scintilSlow,
                       false, true);
   myMPT1->AddConstProperty("SCINTILLATIONYIELD", 50. / MeV);
@@ -173,8 +186,9 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct()
     5.16665 * eV, 5.39129 * eV, 5.63635 * eV, 5.90475 * eV, 6.19998 * eV
   };
 
-  // Rayleigh scattering length calculated by G4OpRayleigh
-  // assume 100 times larger than the rayleigh scattering for now.
+  // Rayleigh scattering length is calculated by G4OpRayleigh
+
+  // Mie: assume 100 times larger than the rayleigh scattering
   std::vector<G4double> mie_water = {
     167024.4 * m, 158726.7 * m, 150742 * m,   143062.5 * m, 135680.2 * m,
     128587.4 * m, 121776.3 * m, 115239.5 * m, 108969.5 * m, 102958.8 * m,
@@ -190,7 +204,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct()
     1422.710 * m, 1200.004 * m, 1004.528 * m, 833.9666 * m, 686.1063 * m
   };
 
-  // gforward, gbackward, forward backward ratio
+  // Mie: gforward, gbackward, forward backward ratio
   G4double mie_water_const[3] = { 0.99, 0.99, 0.8 };
 
   myMPT1->AddProperty("MIEHG", energy_water, mie_water, false, true);

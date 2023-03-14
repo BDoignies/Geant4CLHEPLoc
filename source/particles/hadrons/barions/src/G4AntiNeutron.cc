@@ -75,7 +75,7 @@ G4AntiNeutron* G4AntiNeutron::Definition()
 		    1,              +1,             0,          
 		    1,              +1,             0,             
 	     "baryon",               0,            -1,       -2112,
-		 true,    880.2*second,          NULL,
+		false,    880.2*second,          NULL,
 	        false,       "nucleon",          2112
               );
     // Magnetic Moment
@@ -89,7 +89,7 @@ G4AntiNeutron* G4AntiNeutron::Definition()
     anInstance->SetDecayTable(table);
  
   }
-  theInstance = reinterpret_cast<G4AntiNeutron*>(anInstance);
+  theInstance = static_cast<G4AntiNeutron*>(anInstance);
   return theInstance;
 }
 

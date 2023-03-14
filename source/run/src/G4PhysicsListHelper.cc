@@ -118,7 +118,7 @@ void G4PhysicsListHelper::CheckParticleList() const
     if(!isEmProc)
     {
       G4ProcessVector* list = particle->GetProcessManager()->GetProcessList();
-      for(std::size_t idx = 0; idx < list->size(); ++idx)
+      for(G4int idx = 0; idx < (G4int)list->size(); ++idx)
       {
         isEmProc = ((*list)[idx])->GetProcessType() == fElectromagnetic;
         if(isEmProc)
@@ -561,7 +561,7 @@ G4bool G4PhysicsListHelper::RegisterProcess(G4VProcess* process,
   {
     G4bool duplicated      = false;
     G4ProcessVector* pList = pManager->GetProcessList();
-    for(std::size_t idx = 0; idx < pList->size(); ++idx)
+    for(G4int idx = 0; idx < (G4int)pList->size(); ++idx)
     {
       const G4VProcess* p = (*pList)[idx];
       if((p->GetProcessType() == pType) && (p->GetProcessSubType() == pSubType))
@@ -714,9 +714,9 @@ void G4PhysicsListHelper::ReadInDefaultOrderingParameter()
   theTable->push_back(tmp);
   sizeOfTable += 1;
 
-  tmp.processTypeName = "AnnihToHad";
+  tmp.processTypeName = "AnnihToTauTau";
   tmp.processType     = fElectromagnetic;
-  tmp.processSubType  = fAnnihilationToHadrons;
+  tmp.processSubType  = fAnnihilationToTauTau;
   tmp.ordering[0]     = -1;
   tmp.ordering[1]     = -1;
   tmp.ordering[2]     = 7;
@@ -724,17 +724,27 @@ void G4PhysicsListHelper::ReadInDefaultOrderingParameter()
   theTable->push_back(tmp);
   sizeOfTable += 1;
 
-  tmp.processTypeName = "NuclearStopp";
+  tmp.processTypeName = "AnnihToHad";
+  tmp.processType     = fElectromagnetic;
+  tmp.processSubType  = fAnnihilationToHadrons;
+  tmp.ordering[0]     = -1;
+  tmp.ordering[1]     = -1;
+  tmp.ordering[2]     = 8;
+  tmp.isDuplicable    = false;
+  theTable->push_back(tmp);
+  sizeOfTable += 1;
+
+  tmp.processTypeName = "NuclearStopping";
   tmp.processType     = fElectromagnetic;
   tmp.processSubType  = fNuclearStopping;
   tmp.ordering[0]     = -1;
-  tmp.ordering[1]     = 8;
+  tmp.ordering[1]     = 9;
   tmp.ordering[2]     = -1;
   tmp.isDuplicable    = false;
   theTable->push_back(tmp);
   sizeOfTable += 1;
 
-  tmp.processTypeName = "ElectronSuper";
+  tmp.processTypeName = "ElectronGeneral";
   tmp.processType     = fElectromagnetic;
   tmp.processSubType  = fElectronGeneralProcess;
   tmp.ordering[0]     = -1;
@@ -804,7 +814,7 @@ void G4PhysicsListHelper::ReadInDefaultOrderingParameter()
   theTable->push_back(tmp);
   sizeOfTable += 1;
 
-  tmp.processTypeName = "GammaSuper";
+  tmp.processTypeName = "GammaGeneral";
   tmp.processType     = fElectromagnetic;
   tmp.processSubType  = fGammaGeneralProcess;
   tmp.ordering[0]     = -1;
@@ -814,12 +824,22 @@ void G4PhysicsListHelper::ReadInDefaultOrderingParameter()
   theTable->push_back(tmp);
   sizeOfTable += 1;
 
-  tmp.processTypeName = "PositronSuper";
+  tmp.processTypeName = "PositronGeneral";
   tmp.processType     = fElectromagnetic;
   tmp.processSubType  = fPositronGeneralProcess;
   tmp.ordering[0]     = 1;
   tmp.ordering[1]     = 1;
   tmp.ordering[2]     = 1;
+  tmp.isDuplicable    = false;
+  theTable->push_back(tmp);
+  sizeOfTable += 1;
+
+  tmp.processTypeName = "MuPairByMuon";
+  tmp.processType     = fElectromagnetic;
+  tmp.processSubType  = fMuonPairProdByCharged;
+  tmp.ordering[0]     = -1;
+  tmp.ordering[1]     = -1;
+  tmp.ordering[2]     = 10;
   tmp.isDuplicable    = false;
   theTable->push_back(tmp);
   sizeOfTable += 1;
@@ -1084,9 +1104,29 @@ void G4PhysicsListHelper::ReadInDefaultOrderingParameter()
   theTable->push_back(tmp);
   sizeOfTable +=1;
 
+  tmp.processTypeName = "DNAScavenger";
+  tmp.processType     = fUserDefined;
+  tmp.processSubType  = fLowEnergyScavenger;
+  tmp.ordering[0]     = -1;
+  tmp.ordering[1]     = -1;
+  tmp.ordering[2]     = 1000;
+  tmp.isDuplicable    = false;
+  theTable->push_back(tmp);
+  sizeOfTable += 1;
+
   tmp.processTypeName = "HadElastic";
   tmp.processType     = fHadronic;
   tmp.processSubType  = fHadronElastic;
+  tmp.ordering[0]     = -1;
+  tmp.ordering[1]     = -1;
+  tmp.ordering[2]     = 1000;
+  tmp.isDuplicable    = false;
+  theTable->push_back(tmp);
+  sizeOfTable += 1;
+
+  tmp.processTypeName = "NeutronGeneral";
+  tmp.processType     = fHadronic;
+  tmp.processSubType  = fNeutronGeneral;
   tmp.ordering[0]     = -1;
   tmp.ordering[1]     = -1;
   tmp.ordering[2]     = 1000;

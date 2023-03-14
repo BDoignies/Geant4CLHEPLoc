@@ -79,7 +79,7 @@ void G4ICRU90StoppingData::Initialise()
 {
   if(isInitialized) { return; }
   // this method may be called several times during initialisation
-  G4int nmat = G4Material::GetNumberOfMaterials();
+  G4int nmat = (G4int)G4Material::GetNumberOfMaterials();
   if(nmat == (G4int)nvectors) { return; }
 
   static const G4String nameNIST_ICRU90[3] = 
@@ -89,11 +89,13 @@ void G4ICRU90StoppingData::Initialise()
   for(G4int i=0; i<nmat; ++i) {
     const G4Material* mat = (*(G4Material::GetMaterialTable()))[i];
 
-    G4bool isThere = false;  
-    for(G4int j=0; j<nvectors; ++j) {
-      if(mat == materials[j]) {
-	isThere = true;
-	break;
+    G4bool isThere = false;
+    for(auto& material : materials)
+    {
+      if(mat == material)
+      {
+        isThere = true;
+        break;
       }
     }
     if(!isThere) {
@@ -106,7 +108,8 @@ void G4ICRU90StoppingData::Initialise()
 	}
       }
     }
-    isInitialized = (materials[0] && materials[1] && materials[2]);
+    isInitialized = ((materials[0] != nullptr) && (materials[1] != nullptr) &&
+                     (materials[2] != nullptr));
     if(isInitialized) { return; }
   }
 }
@@ -165,7 +168,7 @@ G4PhysicsFreeVector* G4ICRU90StoppingData::AddData(G4int n, const G4double* e,
 {
   static const G4double fac = CLHEP::MeV*CLHEP::cm2/CLHEP::g;
 
-  G4PhysicsFreeVector* data = new G4PhysicsFreeVector(n, e[0], e[n-1], true);
+  auto* data = new G4PhysicsFreeVector(n, e[0], e[n - 1], true);
   for(G4int i=0; i<n; ++i) { 
     data->PutValues(i, e[i]*CLHEP::MeV, ((G4double)dedx[i])*fac); 
   }

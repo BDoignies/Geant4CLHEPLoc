@@ -121,7 +121,7 @@ void G4NuMuNucleusNcModel::InitialiseModel()
 
   if(fMaster)
   {  
-    char* path = getenv("G4PARTICLEXSDATA");
+    const char* path = G4FindDataDir("G4PARTICLEXSDATA");
     std::ostringstream ost1, ost2, ost3, ost4;
     ost1 << path << "/" << "neutrino" << "/" << pName << "/xarraynckr";
 
@@ -197,7 +197,7 @@ void G4NuMuNucleusNcModel::InitialiseModel()
 /////////////////////////////////////////////////////////
 
 G4bool G4NuMuNucleusNcModel::IsApplicable(const G4HadProjectile & aPart, 
-					       G4Nucleus & targetNucleus)
+					        G4Nucleus & )
 {
   G4bool result  = false;
   G4String pName = aPart.GetDefinition()->GetParticleName();
@@ -209,8 +209,6 @@ G4bool G4NuMuNucleusNcModel::IsApplicable(const G4HadProjectile & aPart,
   {
     result = true;
   }
-  G4int Z = targetNucleus.GetZ_asInt();
-        Z *= 1;
 
   return result;
 }

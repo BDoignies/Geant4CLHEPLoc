@@ -98,6 +98,16 @@ void G4DNAPTBIonisationModel::Initialise(const G4ParticleDefinition* particle,
 
         // Raw materials
         //
+        // MPietrzak
+        AddCrossSectionData("N2",
+                            particleName,
+                            "dna/sigma_ionisation_e-_PTB_N2",
+                            "dna/sigmadiff_cumulated_ionisation_e-_PTB_N2",
+                            scaleFactor);
+        SetLowELimit("N2", particleName, 15.5*eV);
+        SetHighELimit("N2", particleName, 1.02*MeV);
+        // MPietrzak
+
         AddCrossSectionData("THF",
                             particleName,
                             "dna/sigma_ionisation_e-_PTB_THF",
@@ -437,7 +447,7 @@ void G4DNAPTBIonisationModel::ReadDiffCSFile(const G4String& materialName,
     // To read and save the informations contained within the differential cross section files
 
     // get the path of the G4LEDATA data folder
-    char *path = std::getenv("G4LEDATA");
+    const char* path = G4FindDataDir("G4LEDATA");
     // if it is not found then quit and print error message
     if(!path)
     {
